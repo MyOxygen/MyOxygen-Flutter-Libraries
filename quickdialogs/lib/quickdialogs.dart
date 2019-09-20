@@ -5,7 +5,19 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+enum DialogTheme {
+  platformSpecific,
+  materialOnly,
+  cupertinoOnly,
+}
+
 class QuickDialogs {
+  /// Gets or sets the overall app dialog theme. This defaults to "platform
+  /// specific", meaning `QuickDialogs` will automatically determine whether to
+  /// user Cupertino-style dialogs for iOS, or Material-style dialogs for
+  /// Android.
+  static DialogTheme dialogTheme = DialogTheme.platformSpecific;
+
   // Prevent multiple instances of QuickDialogs class being created.
   QuickDialogs._();
 
@@ -139,24 +151,37 @@ class _PlatformAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget alert;
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      // Don't show the title for iOS loading dialogs. This is not HIG compliant.
-      alert = CupertinoAlertDialog(
-        title: title.isEmpty ? null : Text(title),
-        content: contentWidget,
-        actions: actions == null ? [] : actions,
-      );
-    } else {
-      alert = AlertDialog(
-        title: Text(title),
-        content: contentWidget,
-        actions: actions == null ? [] : actions,
-      );
-    }
+    switch (QuickDialogs.dialogTheme) {
+      case DialogTheme.cupertinoOnly:
+        return _createCupertinoDialog(title, contentWidget, actions);
 
-    /// Prevent dialogs with huge font sizes.
-    return alert;
+      case DialogTheme.materialOnly:
+        return _createMaterialDialog(title, contentWidget, actions);
+
+      case DialogTheme.platformSpecific:
+      default:
+        if (Theme.of(context).platform == TargetPlatform.iOS) {
+          return _createCupertinoDialog(title, contentWidget, actions);
+        } else {
+          return _createMaterialDialog(title, contentWidget, actions);
+        }
+    }
+  }
+
+  Widget _createCupertinoDialog(String title, Widget contentWidget, List<Widget> actions) {
+    return CupertinoAlertDialog(
+      title: title.isEmpty ? null : Text(title),
+      content: contentWidget,
+      actions: actions == null ? [] : actions,
+    );
+  }
+
+  Widget _createMaterialDialog(String title, Widget contentWidget, List<Widget> actions) {
+    return AlertDialog(
+      title: Text(title),
+      content: contentWidget,
+      actions: actions == null ? [] : actions,
+    );
   }
 }
 
@@ -171,16 +196,34 @@ class _PlatformDialogButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      return CupertinoDialogAction(
-        child: textWidget,
-        onPressed: onPressed,
-      );
-    } else {
-      return FlatButton(
-        child: textWidget,
-        onPressed: onPressed,
-      );
+    switch (QuickDialogs.dialogTheme) {
+      case DialogTheme.cupertinoOnly:
+        return _createCupertinoAction(textWidget, onPressed);
+
+      case DialogTheme.materialOnly:
+        return _createMaterialAction(textWidget, onPressed);
+
+      case DialogTheme.platformSpecific:
+      default:
+        if (Theme.of(context).platform == TargetPlatform.iOS) {
+          return _createCupertinoAction(textWidget, onPressed);
+        } else {
+          return _createMaterialAction(textWidget, onPressed);
+        }
     }
+  }
+
+  Widget _createCupertinoAction(Widget textWidget, Function onPressed) {
+    return CupertinoDialogAction(
+      child: textWidget,
+      onPressed: onPressed,
+    );
+  }
+
+  Widget _createMaterialAction(Widget textWidget, Function onPressed) {
+    return FlatButton(
+      child: textWidget,
+      onPressed: onPressed,
+    );
   }
 }
