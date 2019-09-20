@@ -69,7 +69,7 @@ void main() {
     bool didContinue = false;
     final createDialog = (context) async {
       didContinue = await QuickDialogs.confirmationDialogAsync(
-        context: context,
+        context,
         title: "MyTitle",
         message: "Continue?",
         positiveButtonText: "Yes",

@@ -99,12 +99,12 @@ class QuickDialogs {
 
   /// Display a confirmation dialog, and set the required positive and negative
   /// buttons texts.
-  static Future<bool> confirmationDialogAsync({
-    BuildContext context,
-    String title,
-    String message,
-    String positiveButtonText,
-    String negativeButtonText,
+  static Future<bool> confirmationDialogAsync(
+    BuildContext context, {
+    @required String title,
+    @required String message,
+    @required String positiveButtonText,
+    @required String negativeButtonText,
   }) async {
     final bool result = await showDialog<bool>(
         context: context,
@@ -117,7 +117,7 @@ class QuickDialogs {
               _PlatformDialogButton.stringContent(
                 text: negativeButtonText,
                 onPressed: () {
-                  // Dialog is pat of the Navigator.
+                  // Dialog is part of the Navigator.
                   // This will just close the *dialog*.
                   Navigator.pop(context, false);
                 },
