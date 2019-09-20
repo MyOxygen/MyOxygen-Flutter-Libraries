@@ -11,3 +11,6 @@ pubspec.lock
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
 doc/api/
+
+# Not sure if I can simply ignore *all* *.DS_Store files using this syntax...
+*.DS_Store
