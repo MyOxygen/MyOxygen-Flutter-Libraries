@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum DialogTheme {
+enum QuickDialogsTheme {
   platformSpecific,
   materialOnly,
   cupertinoOnly,
@@ -16,7 +16,7 @@ class QuickDialogs {
   /// specific", meaning `QuickDialogs` will automatically determine whether to
   /// user Cupertino-style dialogs for iOS, or Material-style dialogs for
   /// Android.
-  static DialogTheme dialogTheme = DialogTheme.platformSpecific;
+  static QuickDialogsTheme dialogTheme = QuickDialogsTheme.platformSpecific;
 
   // Prevent multiple instances of QuickDialogs class being created.
   QuickDialogs._();
@@ -152,13 +152,13 @@ class _PlatformAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (QuickDialogs.dialogTheme) {
-      case DialogTheme.cupertinoOnly:
+      case QuickDialogsTheme.cupertinoOnly:
         return _createCupertinoDialog(title, contentWidget, actions);
 
-      case DialogTheme.materialOnly:
+      case QuickDialogsTheme.materialOnly:
         return _createMaterialDialog(title, contentWidget, actions);
 
-      case DialogTheme.platformSpecific:
+      case QuickDialogsTheme.platformSpecific:
       default:
         if (Theme.of(context).platform == TargetPlatform.iOS) {
           return _createCupertinoDialog(title, contentWidget, actions);
@@ -197,13 +197,13 @@ class _PlatformDialogButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (QuickDialogs.dialogTheme) {
-      case DialogTheme.cupertinoOnly:
+      case QuickDialogsTheme.cupertinoOnly:
         return _createCupertinoAction(textWidget, onPressed);
 
-      case DialogTheme.materialOnly:
+      case QuickDialogsTheme.materialOnly:
         return _createMaterialAction(textWidget, onPressed);
 
-      case DialogTheme.platformSpecific:
+      case QuickDialogsTheme.platformSpecific:
       default:
         if (Theme.of(context).platform == TargetPlatform.iOS) {
           return _createCupertinoAction(textWidget, onPressed);
