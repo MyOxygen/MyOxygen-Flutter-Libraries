@@ -35,6 +35,31 @@ quickdialogs:
 
 According to the docs, you can use other forms of referencing (like tags, branch names, header names etc) to specify which version of the package you wish to use. I haven't manage to get other references working (as of 20 Sep 2019), but I can confirm using the commit reference works.
 
+### Commiting Package Changes
+
+Because this repository contains multiple packages, each commit for each library is saved to the main repository's commit history. This makes it difficult to track commits for each library, and it means any breaking changes will be difficult to find from commit to commit. To mitigate this, it is necessary to properly commit changes with adequate messages. Simply having a message like *Added a null-check* does not give sufficient information (which library was changed, where was this change made, etc).
+
+To prevent commits being lost in the "Commit History", hte following format is proposed:
+
+```
+[<PackageName>] <Commit message>
+```
+Where:
+- `<PackageName>` is the name of the library/package that has been modified.
+- `<CommitMessage>` is the standard message that is sent on commit.
+
+Some examples:
+```
+1. [QuickDialogs] Updated ReadMe.
+2. [QuickDialogs] Added a null-check to the callback handler
+3. [InfiniteScrollView] Added tests for null widgets.
+4. Updated the main ReadMe file.
+```
+
+Examples 1, 2, and 3 clearly state which library they are referring to. This makes it easier to track commits in the main "Commit History".
+
+The format used in example 4 is only expected to be used when changing content **outside the packages folders** like the main ReadMe file.
+
 ### FAQs
 
 > How does versioning work?
