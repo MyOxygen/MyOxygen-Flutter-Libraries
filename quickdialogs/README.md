@@ -11,7 +11,7 @@ quickdialogs:
   git:
     url: https://github.com/MyOxygen/MyOxygen-Flutter-Libraries.git
     path: quickdialogs
-    ref: 6adc41d0358082f085310cbd00947494778e892c # Use the latest QuickDialogs commit hash!!
+    ref: QuickDialogs-v0.0.2 # Use the latest QuickDialogs tag!!
 ```
 
 ### QuickDialogs' APIs
@@ -53,3 +53,34 @@ quickdialogs:
     - `destructiveActionName` - The string that will be shown on the button that will execute the dangerous action.
     - `destructiveActionCallback` - [Optional] The callback when the user presses the destructive (red) action button.
   - Returns: `void`.
+
+### Example use
+
+```dart
+    // Get confirmation from the user.
+    final userConfirmed = await QuickDialogs.confirmationDialogAsync(
+        event.context,
+        title: "Confirmation",
+        message: "Are you sure?",
+        negativeButtonText: "No",
+        positiveButtonText: "Yes",
+    );
+
+    // Warn user they are about to delete all their data.
+    QuickDialogs.destructive(
+      context,
+      title: "Delete",
+      message: "Are you absolutely sure you wish to delete everything?",
+      constructiveActionName: "Cancel",
+      destructiveActionName: "Delete",
+      destructiveActionCallback: () {
+        deleteEverything();
+      },
+    );
+
+    QuickDialogs.infoDialog(
+      context,
+      "Information",
+      "Everything has been successfully deleted.",
+    );
+```
