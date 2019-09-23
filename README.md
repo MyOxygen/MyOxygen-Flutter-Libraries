@@ -7,7 +7,7 @@ The full step-by-step guide is described in the [Dart docs](https://dart.dev/gui
 
 1. Clone this repository.
 2. Open a terminal and navigate to the `/MyOxgyen-Flutter-Libraries` folder, using `cd /path/to/repo/MyOxygen-FLutter-Libraries`.
-3. Still in terminal, run `flutter create --template=package [PACKAGE_NAME]`, replacing `[PACKAGE_NAME]` with the name of the package or library. **Note**: If you are creating a package that requires Android/iOS-specific code, run `flutter create --ord uk.co.myoxygen --template=plugin [PACKAGE_NAME]`. This will create the separate `/android` and `/ios` folders, along with the `/example` folder, which should be used for example code implementing the plugin.
+3. Still in terminal, run `flutter create --template=package [PACKAGE_NAME]`, replacing `[PACKAGE_NAME]` with the name of the package or library. **Note**: If you are creating a package that requires Android/iOS-specific code, run `flutter create --org uk.co.myoxygen --template=plugin [PACKAGE_NAME]`. This will create the separate `/android` and `/ios` folders, along with the `/example` folder, which should be used for example code implementing the plugin.
 4. Write code for your library!
 
 ### Implementing custom packages
