@@ -1,7 +1,4 @@
 library infinite_scroll_view;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'infinite_scroll_controller.dart';
+export 'infinite_scroll_widget.dart';
