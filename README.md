@@ -60,6 +60,19 @@ Examples 1, 2, and 3 clearly state which library they are referring to. This mak
 
 The format used in example 4 is only expected to be used when changing content **outside the packages folders** like the main ReadMe file.
 
+### Releasing a new version
+
+When releasing a new version of whichever package, it is important to assign a tag to the commit that marks it as "released". Tag names should be in the following format:
+
+```
+<PackageName>-v<semantic.version.number>
+
+Example:
+QuickDialogs-v0.0.2
+```
+
+This makes referencing a specific library and commit much easier than having to write the commit hash (which is really unhelpful). It also means that no two tags then clash. For example, `QuickDialogs`'s version 0.0.2 should not clash with `InfiniteScrollView`'s version 0.0.2, if the tags `QuickDialogs-v0.0.2` and `InfiniteScrollView-v0.0.2` respectively are used. When looking at a list of tags, this will make it easy to tell which version each package is on.
+
 ### FAQs
 
 > How does versioning work?
