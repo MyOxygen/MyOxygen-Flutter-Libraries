@@ -1,0 +1,29 @@
+version: 2
+# Source:
+# https://medium.com/flutter-community/setup-ci-cd-pipeline-for-your-flutter-app-using-circleci-ef07e39982ab
+jobs:
+  
+  # Run the tests.
+  test:
+    docker:
+      - image: cirrusci/flutter
+    steps:
+      - checkout
+      - run: cd quickdialogs && flutter test 
+
+  analyze:
+    docker:
+      - image: cirrusci/flutter
+    steps:
+      - checkout
+      - run: cd quickdialogs && pub get
+      - run: flutter analyze
+
+workflows: 
+  version: 2
+  test_and_analyze:
+    jobs:
+    - test
+    - analyze
+    
+
