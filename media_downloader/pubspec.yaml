@@ -1,6 +1,5 @@
 name: media_downloader
-description: A package to facilitate downloading media files for offline use, 
-and loading them into a Flutter project.
+description: A package to facilitate downloading media files for offline use, and loading them into a Flutter project.
 version: 0.0.1
 author:
 homepage:
