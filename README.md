@@ -8,7 +8,11 @@ The full step-by-step guide is described in the [Dart docs](https://dart.dev/gui
 1. Clone this repository.
 2. Open a terminal and navigate to the `/MyOxgyen-Flutter-Libraries` folder, using `cd /path/to/repo/MyOxygen-FLutter-Libraries`.
 3. Still in terminal, run `flutter create --template=package [PACKAGE_NAME]`, replacing `[PACKAGE_NAME]` with the name of the package or library. **Note**: If you are creating a package that requires Android/iOS-specific code, run `flutter create --org uk.co.myoxygen --template=plugin [PACKAGE_NAME]`. This will create the separate `/android` and `/ios` folders, along with the `/example` folder, which should be used for example code implementing the plugin.
-4. Write code for your library!
+4. Commit the new package as is. Mark it as "Initial Commit" (see [Commiting Package Changes](https://github.com/MyOxygen/MyOxygen-Flutter-Libraries#commiting-package-changes) on formatting a commit message).
+5. Open the `/.circleci/libraries_test_run.sh` script in a text editor.
+6. Add your library name (which should be the folder name) to the list of libraries created with the `declare -a libraries` command.
+7. Commit changes.
+8. Write code for your library!
 
 ### Implementing custom packages
 
@@ -19,10 +23,10 @@ When adding a package dependency in Flutter, the `pubspec.yaml` file will be lit
   git:
     url: https://github.com/MyOxygen/MyOxygen-Flutter-Libraries.git
     path: path/to/package's/pubspec/file
-    ref: [COMMIT_REFERENCE]
+    ref: [TAG_NAME]
 ```
 
-As an example, the `QuickDialogs` package is under the `/quickdialogs` folder, and I want to make sure the latest `QuickDialogs` commit (`17ffd2b87a957981d136af3e56df3dd5bf32f215`) is used. My Flutter project's `pubspec.yaml` file should contain:
+As an example, the `QuickDialogs` package is under the `/quickdialogs` folder, and I want to make sure the latest `QuickDialogs` release tag (`QuickDialogs-v0.0.2`) is used. My Flutter project's `pubspec.yaml` file should contain:
 
 ```yaml
 # MyOxygen libraries/packages
@@ -30,16 +34,16 @@ quickdialogs:
   git:
     url: https://github.com/MyOxygen/MyOxygen-Flutter-Libraries.git
     path: quickdialogs
-    ref: 17ffd2b87a957981d136af3e56df3dd5bf32f215 # version 0.0.2
+    ref: QuickDialogs-v0.0.2
 ```
 
-According to the docs, you can use other forms of referencing (like tags, branch names, header names etc) to specify which version of the package you wish to use. I haven't manage to get other references working (as of 20 Sep 2019), but I can confirm using the commit reference works.
+The full list of tags can be obtained using the `git tag` terminal command.
 
 ### Commiting Package Changes
 
 Because this repository contains multiple packages, each commit for each library is saved to the main repository's commit history. This makes it difficult to track commits for each library, and it means any breaking changes will be difficult to find from commit to commit. To mitigate this, it is necessary to properly commit changes with adequate messages. Simply having a message like *Added a null-check* does not give sufficient information (which library was changed, where was this change made, etc).
 
-To prevent commits being lost in the "Commit History", hte following format is proposed:
+To prevent commits being lost in the "Commit History", the following format is proposed:
 
 ```
 [<PackageName>] <Commit message>
@@ -51,7 +55,7 @@ Where:
 Some examples:
 ```
 1. [QuickDialogs] Updated ReadMe.
-2. [QuickDialogs] Added a null-check to the callback handler
+2. [QuickDialogs] Added a null-check to the callback handler.
 3. [InfiniteScrollView] Added tests for null widgets.
 4. Updated the main ReadMe file.
 ```
@@ -77,12 +81,12 @@ This makes referencing a specific library and commit much easier than having to 
 
 > How does versioning work?
 
-Each package has a `pubspec.yaml` file. Because you are creating a dependency to a repository, `pub` will not search for the `pubspec.yaml`'s version number (I think). It is up to the developer to keep the version number up to date for documentation and traceability purposes, but versioning can only happen by referencing the right branch/commit/header.
+Each package has a `pubspec.yaml` file. Because you are creating a dependency to a repository, `pub` will not search for the `pubspec.yaml`'s version number (I think). It is up to the developer to keep the version number up to date for documentation and traceability purposes, but versioning can only happen by referencing the right tag.
 
 > If someone introduces a breaking change to a package, will all the projects that rely on it also break?
 
-No. If you are referencing a specific commit, you will only be getting the code from that commit. If breaking changes occur **after** that commit, but you haven't referenced the new commit, nothing will happen.
+No. If you are referencing a specific tag, you will only be getting the code from that tag. If breaking changes occur **after** that tag-reference, but you haven't referenced the new commits/tags, nothing will happen.
 
 > Do I have to pull down all the libraries just to access one?
 
-No. `pub` will look for the `pubspec.yaml` file to import the necessary package. You will not be importing all the packages, only the one you wish to import. However, for every local package, you will have to point to the git repository, the path, and the commit reference.
+No, `pub` will look for the `pubspec.yaml` file to import the necessary package. You will not be importing all the packages, only the one you wish to import. However, for every local package, you will have to point to the git repository, the path, and the tag name.
