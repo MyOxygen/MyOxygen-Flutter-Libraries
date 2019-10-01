@@ -1,0 +1,25 @@
+version: 2.1
+# Source:
+# https://circleci.com/docs/2.0/configuration-reference/
+jobs:
+  
+  # Run the tests and analyze the code.
+  test_and_analyze:
+    docker:
+      - image: cirrusci/flutter
+    steps:
+      - checkout
+      - run:
+          name: Check which library was changed. Run tests depending on which library was modified in this commit.
+          command: |
+              # Run through the required tests for libraries that have been 
+              # modified in this commit.
+              bash .circleci/libraries_test_run.sh
+
+workflows: 
+  version: 2
+  test_and_analyze:
+    jobs:
+    - test_and_analyze
+    
+
