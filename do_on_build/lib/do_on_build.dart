@@ -1,7 +1,11 @@
 library do_on_build;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
+import 'package:flutter/material.dart';
+
+/// Does an action once the page has been built. Can be safely called from
+/// StreamBuilders.
+void doOnBuild(Function callback) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    callback?.call();
+  });
 }
