@@ -31,4 +31,31 @@ void main() {
 
     expect(hasBeenBuilt, true);
   });
+
+  testWidgets('Numerous doOnBuild() methods called one after the other',
+      (WidgetTester tester) async {
+    int counter = 0;
+    int shouldBeOne, shouldBeTwo, shouldBeThree = 0;
+
+    await tester.pumpWidget(_buildTestApp(
+      () {
+        doOnBuild(() {
+          counter++;
+          shouldBeOne = counter;
+        });
+        doOnBuild(() {
+          counter++;
+          shouldBeTwo = counter;
+        });
+        doOnBuild(() {
+          counter++;
+          shouldBeThree = counter;
+        });
+      },
+    ));
+
+    expect(shouldBeOne, 1);
+    expect(shouldBeTwo, 2);
+    expect(shouldBeThree, 3);
+  });
 }
