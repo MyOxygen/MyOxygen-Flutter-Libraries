@@ -103,13 +103,20 @@ void main() {
     // should reach the end and trigger the callback.
     await tester.drag(find.byType(ListView), const Offset(0.0, -_itemHeight));
     await tester.pump();
-    expect(scrollReachedEnd, true);
+    expect(scrollReachedEnd, false); // We still have the loading widget to show!
 
     expect(find.text('5'), findsNothing);
     expect(find.text('6'), findsNothing);
     expect(find.text('7'), findsOneWidget);
     expect(find.text('8'), findsOneWidget);
     expect(find.text('9'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+
+    // Scroll down a further height of one item. This should display the footer
+    // at the bottom, and by convention the scroll should reach the end.
+    await tester.drag(find.byType(ListView), const Offset(0.0, -_itemHeight));
+    await tester.pump();
+    expect(scrollReachedEnd, true);
   });
 
   testWidgets('ListView scroll to bottom with offset test', (WidgetTester tester) async {
@@ -144,12 +151,18 @@ void main() {
     // Scrolling down by 1 pixel should trigger the callback.
     await tester.drag(find.byType(ListView), const Offset(0.0, -1.0));
     await tester.pump();
-    expect(scrollReachedEnd, true);
+    expect(scrollReachedEnd, false); // Still need to show the indicator!
 
     expect(find.text('5'), findsNothing);
     expect(find.text('6'), findsOneWidget);
     expect(find.text('7'), findsOneWidget);
     expect(find.text('8'), findsOneWidget);
     expect(find.text('9'), findsOneWidget);
+
+    // Scroll down a further height of one item. This should display the footer
+    // at the bottom, and by convention the scroll should reach the end.
+    await tester.drag(find.byType(ListView), const Offset(0.0, -_itemHeight));
+    await tester.pump();
+    expect(scrollReachedEnd, true);
   });
 }

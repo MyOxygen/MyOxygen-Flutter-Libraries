@@ -14,6 +14,7 @@ class InfiniteScrollView extends StatefulWidget {
   final ScrollController scrollController;
   final Widget separator;
   final EdgeInsets padding;
+  final Widget loadingFooter;
 
   /// Creates a [ListView] with infinite scroll capabilities.
   ///
@@ -31,6 +32,7 @@ class InfiniteScrollView extends StatefulWidget {
     this.scrollController,
     this.separator,
     this.padding,
+    this.loadingFooter = const CircularProgressIndicator(),
   })  : assert(builder != null),
         assert(itemCount != null),
         assert(itemCount > 0),
@@ -55,11 +57,13 @@ class _InfiniteScrollViewState extends State<InfiniteScrollView> {
 
   @override
   Widget build(BuildContext context) {
+    final itemCount = widget.loadingFooter == null ? widget.itemCount : widget.itemCount + 1;
+
     if (widget.separator == null) {
       return ListView.builder(
         padding: widget.padding,
         itemBuilder: widget.builder,
-        itemCount: widget.itemCount,
+        itemCount: itemCount,
         controller: _infiniteScrollController.scrollController,
       );
     } else {
@@ -67,8 +71,8 @@ class _InfiniteScrollViewState extends State<InfiniteScrollView> {
         separatorBuilder: (context, index) =>
             index == (widget.itemCount - 2) ? const SizedBox() : widget.separator,
         padding: widget.padding,
-        itemBuilder: widget.builder,
-        itemCount: widget.itemCount,
+        itemBuilder: _buildItem,
+        itemCount: itemCount,
         controller: _infiniteScrollController.scrollController,
       );
     }
@@ -78,5 +82,31 @@ class _InfiniteScrollViewState extends State<InfiniteScrollView> {
   void dispose() {
     _infiniteScrollController?.dispose();
     super.dispose();
+  }
+
+  Widget _buildItem(BuildContext context, int index) {
+    if (index >= widget.itemCount) {
+      return _EndListProgressIndicator(progressIndicator: widget.loadingFooter);
+    } else {
+      return widget.builder(context, index);
+    }
+  }
+}
+
+class _EndListProgressIndicator extends StatelessWidget {
+  final Widget progressIndicator;
+
+  const _EndListProgressIndicator({
+    this.progressIndicator = const CircularProgressIndicator(),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: progressIndicator,
+      ),
+    );
   }
 }
