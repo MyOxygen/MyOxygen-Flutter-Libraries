@@ -7,7 +7,7 @@ import 'infinite_scroll_controller.dart';
 /// This is a wrapper class to facilitte creating a [ListView] that continuously
 /// updates its contents as the user scrolls down the list.
 class InfiniteScrollView extends StatefulWidget {
-  final Function(BuildContext, int index) builder;
+  final Widget Function(BuildContext, int index) builder;
   final int itemCount;
   final Function onReachedEndCallback;
   final int endOfScrollOffset;
@@ -64,7 +64,8 @@ class _InfiniteScrollViewState extends State<InfiniteScrollView> {
       );
     } else {
       return ListView.separated(
-        separatorBuilder: (context, index) => widget.separator,
+        separatorBuilder: (context, index) =>
+            index == (widget.itemCount - 2) ? const SizedBox() : widget.separator,
         padding: widget.padding,
         itemBuilder: widget.builder,
         itemCount: widget.itemCount,
