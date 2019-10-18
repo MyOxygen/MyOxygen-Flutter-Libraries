@@ -15,6 +15,7 @@ LATEST_COMMIT=$(git rev-parse HEAD)
 
 # Declare the list of libraries to test and analyze.
 declare -a libraries=(
+    "database_provider"
     "do_on_build"
     "infinite_scroll_view"
     "media_downloader"
