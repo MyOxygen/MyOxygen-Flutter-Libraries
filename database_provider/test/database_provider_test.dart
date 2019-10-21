@@ -9,7 +9,7 @@ class _TestDatabaseItem extends DatabaseItem {
   final String title;
   static const String titleColumnName = "title";
 
-  _TestDatabaseItem(this.id, this.title) : super(id: id);
+  _TestDatabaseItem(this.id, this.title) : super(id);
 
   @override
   List<Object> get props => [id];
