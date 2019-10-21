@@ -138,7 +138,7 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
   /// automatically replaced with the new one.
   ///
   /// `object` - The data object to be inserted.
-  Future<int> insert({@required T object}) async {
+  Future<int> insertSingle({@required T object}) async {
     try {
       final db = await getDatabase();
       return await db.insert(tableName, object.toMap(),
@@ -152,7 +152,7 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
   /// table, they will be replaced with the new ones.
   ///
   /// `objects` - The list of data object to be inserted in the table.
-  Future<List<int>> batchInsert({@required List<DatabaseItem> objects}) async {
+  Future<List<int>> insertAll({@required List<DatabaseItem> objects}) async {
     List<dynamic> results;
     final db = await getDatabase();
     await db.transaction((transaction) async {
@@ -184,7 +184,7 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
   /// second with `whereArgs[1]` etc.
   /// `converter` - The converter function for converting `Map<String, dynamic>`
   /// to `DatabaseItem`.
-  Future<T> get(
+  Future<T> getSingle(
       {String where,
       List<dynamic> whereArgs,
       @required DatabaseItem converter(Map<String, dynamic> map)}) async {
@@ -236,13 +236,13 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
   /// Updates a row item in the table.
   ///
   /// `item` - The row item to update.
-  Future<int> update(DatabaseItem item) async {
+  Future<int> updateSingle(DatabaseItem item) async {
     try {
       final db = await getDatabase();
       return await db.update(
         tableName,
         item.toMap(),
-        where: 'id = ?',
+        where: '${DatabaseItem.idColumnName} = ?',
         whereArgs: [item.id],
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -266,7 +266,7 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
       batch.update(
         tableName,
         item.toMap(),
-        where: 'id = ?',
+        where: '${DatabaseItem.idColumnName} = ?',
         whereArgs: [item.id],
         conflictAlgorithm: conflictAlgorithm,
       );
@@ -282,12 +282,12 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
   /// Deletes a row in the table.
   ///
   /// `item` - The database item to delete.
-  Future<int> delete(DatabaseItem item) async {
+  Future<int> deleteSingle(DatabaseItem item) async {
     try {
       final db = await getDatabase();
       return await db.delete(
         tableName,
-        where: 'id = ?',
+        where: '${DatabaseItem.idColumnName} = ?',
         whereArgs: [item.id],
       );
     } catch (e) {
