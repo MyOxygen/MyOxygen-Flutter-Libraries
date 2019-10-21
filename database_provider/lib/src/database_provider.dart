@@ -14,6 +14,41 @@ enum DatabaseError {
   failedToCreateColumn,
 }
 
+///
+/// Create an instance to access a database
+///
+/// [databaseVersion] specifies the schema version of the database being
+/// opened. This is used to decide whether to call [onCreate], [onUpgrade],
+/// and [onDowngrade] (overrides).
+///
+/// The optional callbacks are called in the following order:
+///
+/// 1. [onCreate] or [onUpgrade] or [onDowngrade]
+/// 4. [onOpen]
+///
+/// If [version] is specified, [onCreate], [onUpgrade], and [onDowngrade] can
+/// be called. These functions are mutually exclusive — only one of them can be
+/// called depending on the context, although they can all be specified to
+/// cover multiple scenarios.
+///
+/// [onCreate] is called if the database did not exist prior to calling
+/// [openDatabase]. You can use the opportunity to create the required tables
+/// in the database according to your schema.
+///
+/// [onUpgrade] is called if either of the following conditions are met:
+///
+/// 1. [onCreate] is not specified
+/// 2. The database already exists and [version] is higher than the last
+/// database version
+///
+/// In the first case where [onCreate] is not specified, [onUpgrade] is called
+/// with its [oldVersion] parameter as `0`. In the second case, you can perform
+/// the necessary migration procedures to handle the differing schema.
+///
+/// [onDowngrade] is called only when [version] is lower than the last database
+/// version. This is a rare case and should only come up if a newer version of
+/// your code has created a database that is then interacted with by an older
+/// version of your code. You should try to avoid this scenario.
 abstract class DatabaseProvider<T extends DatabaseItem> {
   final String databaseName;
   final int databaseVersion;
@@ -60,11 +95,11 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
 
   void onOpen(Database openedDatabase) {}
 
-  void onCreate(Database database, int version);
+  void onCreate(Database database, int version) {}
 
-  Future<void> onUpgrade(Database database, int oldVersion, int newVersion);
+  Future<void> onUpgrade(Database database, int oldVersion, int newVersion) => null;
 
-  Future<void> onDowngrade(Database database, int oldVersion, int newVersion);
+  Future<void> onDowngrade(Database database, int oldVersion, int newVersion) => null;
 
   /// Gets table information. Returns a list of `ColumnInfo` objects.
   Future<List<ColumnInfo>> getTableInfoAsync() async {
