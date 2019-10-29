@@ -39,7 +39,7 @@ quickdialogs:
 
 The full list of tags can be obtained using the `git tag` terminal command.
 
-### Commiting Package Changes
+### Committing Package Changes
 
 Because this repository contains multiple packages, each commit for each library is saved to the main repository's commit history. This makes it difficult to track commits for each library, and it means any breaking changes will be difficult to find from commit to commit. To mitigate this, it is necessary to properly commit changes with adequate messages. Simply having a message like *Added a null-check* does not give sufficient information (which library was changed, where was this change made, etc).
 
@@ -63,6 +63,8 @@ Some examples:
 Examples 1, 2, and 3 clearly state which library they are referring to. This makes it easier to track commits in the main "Commit History".
 
 The format used in example 4 is only expected to be used when changing content **outside the packages folders** like the main ReadMe file.
+
+If you accidentally commit with an incorrect package tag. This can be fixed using `git amend` if the most recent commit, or `git rebase` if not. A more comprehensive guide can be [found here.](https://help.github.com/en/github/committing-changes-to-your-project/changing-a-commit-message).
 
 ### Releasing a new version
 
