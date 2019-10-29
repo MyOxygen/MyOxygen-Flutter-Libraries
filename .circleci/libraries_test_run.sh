@@ -20,6 +20,7 @@ declare -a libraries=(
     "infinite_scroll_view"
     "media_downloader"
     "quickdialogs"
+    "store"
     )
 
 for i in "${libraries[@]}" ; do
