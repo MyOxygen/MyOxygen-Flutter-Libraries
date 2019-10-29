@@ -1,14 +1,7 @@
 # store
 
-A new Flutter package project.
+A wrapper around the [SharedPreferences library](https://pub.dev/packages/shared_preferences). This is to allow for easier mocking. 
 
-## Getting Started
+## Tests
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+`SharedPreferences` relies on platform channels to access [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences) on Android and [UserDefaults](https://developer.apple.com/documentation/foundation/nsuserdefaults?language=objc) on iOS. This means that it can't be tested in unit tests, because it requires a device. The tests verify that the correct methods are called, but cannot verify that the 3rd party SharedPreferences library is working as intended.
