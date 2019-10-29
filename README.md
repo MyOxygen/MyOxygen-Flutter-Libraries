@@ -64,6 +64,8 @@ Examples 1, 2, and 3 clearly state which library they are referring to. This mak
 
 The format used in example 4 is only expected to be used when changing content **outside the packages folders** like the main ReadMe file.
 
+If you accidentally commit with an incorrect package tag. This can be fixed using `git amend` if the most recent commit, or `git rebase` if not. A more comprehensive guide can be [found here.](https://help.github.com/en/github/committing-changes-to-your-project/changing-a-commit-message).
+
 ### Releasing a new version
 
 When releasing a new version of whichever package, it is important to assign a tag to the commit that marks it as "released". Tag names should be in the following format:
