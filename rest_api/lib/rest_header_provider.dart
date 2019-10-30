@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
 
 /// Provides a headers for a request.
-abstract class BaseHeaderProvider {
-  const BaseHeaderProvider();
+abstract class HeaderProvider {
+  const HeaderProvider();
 
   /// Return a future containting the [Header] that you want to add to the call.
   /// can return null from that future to add no header.
@@ -37,10 +37,10 @@ class Header {
 
 /// Convert a list of header providers into a map where each key corresponds to a header [name],
 /// and each value corresponds to a header [value].
-Future<Map<String, String>> createHeaderMap(List<BaseHeaderProvider> headerProviders) async {
+Future<Map<String, String>> createHeaderMap(List<HeaderProvider> headerProviders) async {
   final headers = Map<String, String>();
 
-  for (BaseHeaderProvider headerProvider in headerProviders) {
+  for (HeaderProvider headerProvider in headerProviders) {
     final header = await headerProvider.getHeader();
     if (header != null) {
       headers[header.name] = header.value;

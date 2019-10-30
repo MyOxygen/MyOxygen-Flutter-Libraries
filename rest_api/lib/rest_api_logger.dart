@@ -4,10 +4,10 @@ import 'package:rest_api/rest_api.dart';
 
 import 'json_object.dart';
 
-/// Keeping all the logging in a separate class so it doens't clutter
-/// up the [BaseWebApi] class with logging methods.
-class BaseWebApiLogger {
-  const BaseWebApiLogger();
+class RestApiLogger {
+  /// Log the networking stuff. Keeps the logging code out of the
+  /// main networking code.
+  const RestApiLogger();
 
   void logRequest(
     RestRequestType requestType,

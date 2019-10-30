@@ -20,10 +20,10 @@ enum RestRequestType { post, get, put, delete }
 
 /// Provides generic POST, GET, PUT, and DELETE Rest requests. The class should
 /// be used to facilitate API calls to any server.
-class BaseWebApi {
+class RestApi {
   final String baseUrl;
-  final List<BaseHeaderProvider> headerProviders;
-  final BaseWebApiLogger logger;
+  final List<HeaderProvider> headerProviders;
+  final RestApiLogger logger;
   final Client clientOverride;
   final Duration timeout;
 
@@ -32,7 +32,7 @@ class BaseWebApi {
   /// [logger] is intercepts requests and logs them (nullable).
   /// [clientOverride] can be used to set a specific client. By default, it'll use a new client for each call.
   /// [timeout] is the duration the call will wait before giving out. Defaults to 30s
-  const BaseWebApi({
+  const RestApi({
     @required this.baseUrl,
     @required this.headerProviders,
     this.logger,
@@ -43,9 +43,78 @@ class BaseWebApi {
   // create a new client, unless an override is provided.
   Client get _client => clientOverride ?? Client();
 
-  /// Sends a request to the server. The request type is set in [requestType],
-  /// and the server/API is set in [url]. The output type is optional, but
-  /// defaults to the raw response object, which contains status codes.
+  /// Make a network call of type GET at the given [baseUrl] and [endpoint]
+  /// after appending the [queryParameters] (nullable).
+  /// headers are added through the [headerProviders]
+  /// [jsonBody] is nullable
+  Future<RestResponse> get(
+    String endpoint, {
+    JsonObject jsonBody,
+    Map<String, String> queryParameters,
+  }) {
+    return request(
+      RestRequestType.get,
+      endpoint,
+      jsonBody: jsonBody,
+      queryParameters: queryParameters,
+    );
+  }
+
+  /// Make a network call of type POST at the given [baseUrl] and [endpoint]
+  /// after appending the [queryParameters] (nullable).
+  /// headers are added through the [headerProviders]
+  /// [jsonBody] is nullable
+  Future<RestResponse> post(
+    String endpoint, {
+    JsonObject jsonBody,
+    Map<String, String> queryParameters,
+  }) {
+    return request(
+      RestRequestType.post,
+      endpoint,
+      jsonBody: jsonBody,
+      queryParameters: queryParameters,
+    );
+  }
+
+  /// Make a network call of type DELETE at the given [baseUrl] and [endpoint]
+  /// after appending the [queryParameters] (nullable).
+  /// headers are added through the [headerProviders]
+  /// [jsonBody] is nullable
+  Future<RestResponse> delete(
+    String endpoint, {
+    JsonObject jsonBody,
+    Map<String, String> queryParameters,
+  }) {
+    return request(
+      RestRequestType.delete,
+      endpoint,
+      jsonBody: jsonBody,
+      queryParameters: queryParameters,
+    );
+  }
+
+  /// Make a network call of type PUT at the given [baseUrl] and [endpoint]
+  /// after appending the [queryParameters] (nullable).
+  /// headers are added through the [headerProviders]
+  /// [jsonBody] is nullable
+  Future<RestResponse> put(
+    String endpoint, {
+    JsonObject jsonBody,
+    Map<String, String> queryParameters,
+  }) {
+    return request(
+      RestRequestType.put,
+      endpoint,
+      jsonBody: jsonBody,
+      queryParameters: queryParameters,
+    );
+  }
+
+  /// Make a network call of type [requestType] at the given [baseUrl] and [endpoint]
+  /// after appending the [queryParameters] (nullable).
+  /// headers are added through the [headerProviders]
+  /// [jsonBody] is nullable
   Future<RestResponse> request(
     RestRequestType requestType,
     String endpoint, {
@@ -97,7 +166,7 @@ class BaseWebApi {
       rethrow;
     }
 
-    return _createResponse(response);
+    return _createRestResponse(response);
   }
 
   /// Builds a url by concatenating the [baseUrl] and [endpoint] and automatically
@@ -126,7 +195,8 @@ class BaseWebApi {
     return result;
   }
 
-  RestResponse _createResponse(Response response) {
+  /// Create a [RestResponse] object from the raw [Response] object
+  RestResponse _createRestResponse(Response response) {
     if (response == null) {
       throw NoResponseError();
     }
