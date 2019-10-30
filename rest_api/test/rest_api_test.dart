@@ -5,11 +5,19 @@ import 'package:rest_api/rest_api.dart';
 import 'package:rest_api/rest_header_provider.dart';
 
 const _baseUrl = "https://www.example.com";
+const _endpoint = "/test";
 const _headerName = "HEADER_NAME";
 const _headerValue = "HEADER_VALUE";
 const _mockJSON = '{"key": "value"}';
 
+const _keyA = "queryA";
+const _valueA = "valueA";
+const _keyB = "queryB";
+const _valueB = "valueB";
+
 void main() {
+  const _fullUrl = "$_baseUrl$_endpoint?$_keyA=$_valueA&$_keyB=$_valueB";
+
   _MockClient _client;
   RestApi restApi;
 
@@ -26,21 +34,25 @@ void main() {
   });
 
   test("RestApi makes successfull GET call", () async {
-    when(_client.get("$_baseUrl/test", headers: {_headerName: _headerValue}))
+    when(_client.get(_fullUrl, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
-    final result = await restApi.get("/test");
+    final result = await restApi.get(
+      _endpoint,
+      queryParameters: {_keyA: _valueA, _keyB: _valueB},
+    );
 
     expect(result.statusCode, equals(200));
     expect(result.body.toMap()["key"], equals("value"));
   });
 
   test("RestApi makes successfull POST call", () async {
-    when(_client.post("$_baseUrl/test", body: _mockJSON, headers: {_headerName: _headerValue}))
+    when(_client.post(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.post(
-      "/test",
+      _endpoint,
+      queryParameters: {_keyA: _valueA, _keyB: _valueB},
       jsonBody: JsonObject.fromString(_mockJSON),
     );
 
@@ -49,11 +61,12 @@ void main() {
   });
 
   test("RestApi makes successfull PUT call", () async {
-    when(_client.put("$_baseUrl/test", body: _mockJSON, headers: {_headerName: _headerValue}))
+    when(_client.put(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.put(
-      "/test",
+      _endpoint,
+      queryParameters: {_keyA: _valueA, _keyB: _valueB},
       jsonBody: JsonObject.fromString(_mockJSON),
     );
 
@@ -62,11 +75,12 @@ void main() {
   });
 
   test("RestApi makes successfull DELETE call", () async {
-    when(_client.delete("$_baseUrl/test", headers: {_headerName: _headerValue}))
+    when(_client.delete(_fullUrl, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.delete(
-      "/test",
+      _endpoint,
+      queryParameters: {_keyA: _valueA, _keyB: _valueB},
       jsonBody: JsonObject.fromString(_mockJSON),
     );
 
