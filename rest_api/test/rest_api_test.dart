@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rest_api/rest_api.dart';
+import 'package:rest_api/rest_api_errors.dart';
 import 'package:rest_api/rest_header_provider.dart';
 
 const _baseUrl = "https://www.example.com";
@@ -46,6 +49,19 @@ void main() {
     expect(result.body.toMap()["key"], equals("value"));
   });
 
+  test("RestApi handles an unsuccessfull GET call", () async {
+    when(_client.get(_fullUrl, headers: {_headerName: _headerValue}))
+        .thenAnswer((_) async => Response(_mockJSON, 400));
+
+    final result = await restApi.get(
+      _endpoint,
+      queryParameters: {_keyA: _valueA, _keyB: _valueB},
+    );
+
+    expect(result.statusCode, equals(400));
+    expect(result.body.toMap()["key"], equals("value"));
+  });
+
   test("RestApi makes successfull POST call", () async {
     when(_client.post(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
@@ -86,6 +102,35 @@ void main() {
 
     expect(result.statusCode, equals(200));
     expect(result.body.toMap()["key"], equals("value"));
+  });
+
+  test("RestApi handles No response", () async {
+    when(_client.get(_fullUrl, headers: {_headerName: _headerValue})).thenAnswer((_) async => null);
+
+    try {
+      await restApi.get(
+        _endpoint,
+        queryParameters: {_keyA: _valueA, _keyB: _valueB},
+      );
+      expect(false, true, reason: "the api call should have failed before it got here.");
+    } catch (e) {
+      expect(e, isA<NoResponseError>());
+    }
+  });
+
+  test("RestApi handles SocketException", () async {
+    when(_client.get(_fullUrl, headers: {_headerName: _headerValue}))
+        .thenAnswer((_) async => throw SocketException("No Connection"));
+
+    try {
+      await restApi.get(
+        _endpoint,
+        queryParameters: {_keyA: _valueA, _keyB: _valueB},
+      );
+      expect(false, true, reason: "the api call should have failed before it got here.");
+    } catch (e) {
+      expect(e, isA<NoConnectionError>());
+    }
   });
 }
 

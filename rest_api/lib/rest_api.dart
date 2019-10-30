@@ -153,14 +153,8 @@ class RestApi {
           response = await _client.delete(url, headers: headers).timeout(_timeout);
           break;
       }
-    } catch (exception, stacktrace) {
-      if (exception is SocketException) {
-        throw NoConnectionError();
-      }
-
-      print("BaseWebApi - Failed to get response. Cause: $exception");
-      print("$stacktrace");
-      rethrow;
+    } on SocketException {
+      throw NoConnectionError();
     }
 
     return _createRestResponse(response);
