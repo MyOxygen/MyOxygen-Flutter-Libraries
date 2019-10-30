@@ -21,6 +21,7 @@ declare -a libraries=(
     "media_downloader"
     "quickdialogs"
     "store"
+    "rest_api"
     )
 
 for i in "${libraries[@]}" ; do
