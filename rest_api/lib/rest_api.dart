@@ -52,7 +52,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
   }) {
-    return request(
+    return _makeRequest(
       RestRequestType.get,
       endpoint,
       jsonBody: jsonBody,
@@ -69,7 +69,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
   }) {
-    return request(
+    return _makeRequest(
       RestRequestType.post,
       endpoint,
       jsonBody: jsonBody,
@@ -86,7 +86,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
   }) {
-    return request(
+    return _makeRequest(
       RestRequestType.delete,
       endpoint,
       jsonBody: jsonBody,
@@ -103,7 +103,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
   }) {
-    return request(
+    return _makeRequest(
       RestRequestType.put,
       endpoint,
       jsonBody: jsonBody,
@@ -111,11 +111,8 @@ class RestApi {
     );
   }
 
-  /// Make a network call of type [requestType] at the given [baseUrl] and [endpoint]
-  /// after appending the [queryParameters] (nullable).
-  /// headers are added through the [headerProviders]
-  /// [jsonBody] is nullable
-  Future<RestResponse> request(
+  /// Makes a network call based on [requestType]
+  Future<RestResponse> _makeRequest(
     RestRequestType requestType,
     String endpoint, {
     JsonObject jsonBody,
