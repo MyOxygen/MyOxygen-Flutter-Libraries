@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rest_api/rest_api.dart';
-import 'package:rest_api/rest_api_errors.dart';
-import 'package:rest_api/rest_header_provider.dart';
+import 'package:rest_api/src/rest_api_errors.dart';
+import 'package:rest_api/src/rest_header_provider.dart';
 
 const _baseUrl = "https://www.example.com";
 const _endpoint = "/test";

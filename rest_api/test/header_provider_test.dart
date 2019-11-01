@@ -1,4 +1,4 @@
-import 'package:rest_api/rest_header_provider.dart';
+import 'package:rest_api/src/rest_header_provider.dart';
 import 'package:test_api/test_api.dart';
 
 class _TestHeaderProvider extends HeaderProvider {
