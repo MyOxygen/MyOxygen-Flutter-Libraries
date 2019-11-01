@@ -1,6 +1,10 @@
 import 'package:meta/meta.dart';
 
-/// Provides a headers for a request.
+/// Provides a headers for a request. To be used with dynamic data that may
+/// change throughout the app's lifecycle. One example is the authentication
+/// token: a [List<Header>] will retain the data staticly, whereas a
+/// [List<HeaderProvider>] allows developers to implement fetching the data from
+/// a local storage provider (or elsewhere).
 abstract class HeaderProvider {
   const HeaderProvider();
 
