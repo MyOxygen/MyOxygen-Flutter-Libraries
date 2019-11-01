@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:rest_api/rest_api.dart';
 
+import 'rest_api.dart';
 import 'json_object.dart';
+
+export 'json_object.dart';
 
 class RestApiLogger {
   /// Log the networking stuff. Keeps the logging code out of the
@@ -15,7 +17,7 @@ class RestApiLogger {
     JsonObject jsonBody,
     Map<String, String> headers,
   }) {
-    // do it in an assert so it only runs in debug mode,
+    // Do it in an assert so it only runs in debug mode,
     assert(() {
       _logRequest(requestType, url, jsonBody: jsonBody, headers: headers);
       return true;

@@ -2,25 +2,29 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:rest_api/rest_api_errors.dart';
+
+import 'rest_api_errors.dart';
+
+export 'rest_api_errors.dart';
 
 /// A wrapper around a json string to handle parsing.
 /// It throws a nice error if you give it any invalid json.
 class JsonObject {
   static const Converter<List<int>, String> _decoder = Utf8Decoder();
 
-  /// All types are stored as a string, and then converted back to another format when required.
+  /// All types are stored as a string, and then converted back to another
+  /// format when required.
   final String jsonString;
 
   JsonObject._(this.jsonString) : assert(jsonString != null) {
-    // if this gets constructed with an invalid json.
-    // throw an exception sooner rather than later.
+    // If this gets constructed with an invalid json, throw an exception sooner
+    // rather than later.
     if (!_validateJson()) {
       throw InvalidJsonError();
     }
   }
 
-  /// Factory constructors.
+  // Factory constructors.
 
   factory JsonObject.fromMap(Map<String, dynamic> map) => JsonObject._(jsonEncode(map));
 
@@ -33,7 +37,7 @@ class JsonObject {
 
   factory JsonObject.fromString(String string) => JsonObject._(string);
 
-  /// converterting back to more useful formats.
+  // Converting back to more useful formats.
 
   List<T> toList<T>({@required T Function(Map<String, dynamic>) converter}) {
     final decodedJson = jsonDecode(jsonString) as List<dynamic>;

@@ -1,6 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:rest_api/rest_api.dart';
-import 'package:rest_api/rest_header_provider.dart';
+
+import 'json_object.dart';
+import 'rest_header_provider.dart';
+
+export 'json_object.dart';
+export 'rest_header_provider.dart';
 
 class RestResponse {
   final int statusCode;

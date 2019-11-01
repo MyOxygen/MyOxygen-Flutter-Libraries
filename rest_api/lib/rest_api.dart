@@ -5,14 +5,18 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
-import 'package:rest_api/rest_api_errors.dart';
-import 'package:rest_api/rest_api_logger.dart';
-import 'package:rest_api/rest_header_provider.dart';
-import 'package:rest_api/rest_response.dart';
 
 import 'json_object.dart';
+import 'rest_api_errors.dart';
+import 'rest_api_logger.dart';
+import 'rest_header_provider.dart';
+import 'rest_response.dart';
+
+export 'package:http/src/client.dart';
 
 export 'json_object.dart';
+export 'rest_header_provider.dart';
+export 'rest_response.dart';
 
 const _timeout = Duration(seconds: 30);
 
@@ -21,9 +25,11 @@ enum RestRequestType { post, get, put, delete }
 /// Provides generic POST, GET, PUT, and DELETE Rest requests. The class should
 /// be used to facilitate API calls to any server.
 class RestApi {
+  static const RestApiLogger logger = RestApiLogger();
+
   final String baseUrl;
   final List<HeaderProvider> headerProviders;
-  final RestApiLogger logger;
+  final bool enableTrace;
   final Client clientOverride;
   final Duration timeout;
 
@@ -35,7 +41,7 @@ class RestApi {
   const RestApi({
     @required this.baseUrl,
     @required this.headerProviders,
-    this.logger,
+    this.enableTrace = true,
     this.clientOverride,
     this.timeout = _timeout,
   }) : assert(baseUrl != null);
@@ -127,7 +133,9 @@ class RestApi {
     // add all the available headers.
     final headers = await createHeaderMap(headerProviders);
 
-    logger?.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
+    if (enableTrace) {
+      logger.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
+    }
 
     // Shouldn't matter if the json parameter is null.
     Response response;
