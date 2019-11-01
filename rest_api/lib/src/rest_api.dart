@@ -13,6 +13,7 @@ import 'rest_response.dart';
 export 'package:http/src/client.dart';
 
 export 'json_object.dart';
+export 'rest_api_errors.dart';
 export 'rest_header_provider.dart';
 export 'rest_response.dart';
 
