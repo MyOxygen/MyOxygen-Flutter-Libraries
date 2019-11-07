@@ -22,6 +22,7 @@ declare -a libraries=(
     "quickdialogs"
     "store"
     "rest_api"
+    "unfocus_handler"
     )
 
 for i in "${libraries[@]}" ; do
