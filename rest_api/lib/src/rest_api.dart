@@ -24,11 +24,9 @@ enum RestRequestType { post, get, put, delete }
 /// Provides generic POST, GET, PUT, and DELETE Rest requests. The class should
 /// be used to facilitate API calls to any server.
 class RestApi {
-  static const RestApiLogger logger = RestApiLogger();
-
+  final RestApiLogger logger;
   final String baseUrl;
   final List<HeaderProvider> headerProviders;
-  final bool enableTrace;
   final Client clientOverride;
   final Duration timeout;
 
@@ -40,7 +38,7 @@ class RestApi {
   const RestApi({
     @required this.baseUrl,
     @required this.headerProviders,
-    this.enableTrace = true,
+    this.logger = const RestApiLogger(),
     this.clientOverride,
     this.timeout = _timeout,
   }) : assert(baseUrl != null);
@@ -132,9 +130,7 @@ class RestApi {
     // add all the available headers.
     final headers = await createHeaderMap(headerProviders);
 
-    if (enableTrace) {
-      logger.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
-    }
+    logger?.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
 
     // Shouldn't matter if the json parameter is null.
     Response response;
@@ -163,6 +159,8 @@ class RestApi {
     } on SocketException {
       throw NoConnectionError();
     }
+
+    logger?.logResponse(response);
 
     return _createRestResponse(response);
   }
