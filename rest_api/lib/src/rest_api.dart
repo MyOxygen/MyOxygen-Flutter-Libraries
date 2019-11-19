@@ -157,7 +157,7 @@ class RestApi {
           break;
       }
     } on SocketException {
-      throw NoConnectionError();
+      handleError(NoConnectionError());
     }
 
     logger?.logResponse(response);
@@ -194,10 +194,18 @@ class RestApi {
   /// Create a [RestResponse] object from the raw [Response] object
   RestResponse _createRestResponse(Response response) {
     if (response == null) {
-      throw NoResponseError();
+      handleError(NoResponseError());
     }
 
-    final body = response.body != null ? JsonObject.fromString(response.body) : null;
+    JsonObject responseBody;
+
+    if (response.body != null) {
+      try {
+        responseBody = JsonObject.fromString(response.body);
+      } on RestApiError catch (e) {
+        handleError(e);
+      }
+    }
 
     final headers = Set<Header>();
     if (response.headers != null) {
@@ -208,8 +216,15 @@ class RestApi {
 
     return RestResponse(
       statusCode: response.statusCode,
-      body: body,
+      body: responseBody,
       headers: headers,
     );
+  }
+
+  // subclasses can handle the thrown errors differently.
+  // the default is just to throw it.
+  void handleError(RestApiError error) {
+    logger?.logException(error);
+    throw error;
   }
 }
