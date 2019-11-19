@@ -30,6 +30,7 @@ void main() {
     restApi = RestApi(
       baseUrl: _baseUrl,
       clientOverride: _client,
+      logger: null, // no logging in tests.
       headerProviders: [
         _MockHeaderProvider(),
       ],

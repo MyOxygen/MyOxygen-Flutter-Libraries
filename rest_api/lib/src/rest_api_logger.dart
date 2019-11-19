@@ -24,7 +24,7 @@ class RestApiLogger {
     }());
   }
 
-  void logException(Exception exception) {
+  void logException(dynamic exception) {
     // do it in an assert so it only runs in debug mode,
     assert(() {
       _logException(exception);
@@ -47,7 +47,7 @@ class RestApiLogger {
     JsonObject jsonBody,
     Map<String, String> headers,
   }) {
-    debugPrint("---> ${_requestTypeName(requestType)} $url");
+    debugPrint("---> ${_requestTypeName(requestType)} ${url ?? "NULL"}");
     if (headers != null) {
       headers.forEach((k, v) => debugPrint("---> $k : $v"));
     }
@@ -58,7 +58,7 @@ class RestApiLogger {
   }
 
   /// Prints an Exception.
-  void _logException(Exception exception) {
+  void _logException(dynamic exception) {
     debugPrint("<--- EXCEPTION");
     if (exception != null) {
       debugPrint("<--- ${exception.toString()}");
@@ -67,6 +67,11 @@ class RestApiLogger {
 
   /// Prints a response.
   void _logResponse(Response response) {
+    if (response == null) {
+      debugPrint("<--- Null response");
+      return;
+    }
+
     debugPrint("<--- ${response.statusCode} ${response.request.url}");
     if (response.headers != null) {
       response.headers.forEach((k, v) => debugPrint("<--- $k : $v"));
@@ -88,6 +93,6 @@ class RestApiLogger {
       case RestRequestType.get:
         return "GET";
     }
-    throw ArgumentError("Unknown request type $type");
+    return "NULL TYPE";
   }
 }
