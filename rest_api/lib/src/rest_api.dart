@@ -214,12 +214,21 @@ class RestApi {
       );
     }
 
-    return RestResponse(
+    final restResponse = RestResponse(
       statusCode: response.statusCode,
       body: responseBody,
       headers: headers,
     );
+
+    /// call the subclass listener
+    onResponse(restResponse);
+
+    return restResponse;
   }
+
+  /// A listener that a subclass can use to intercept responses.
+  /// [response] is always non-null.
+  void onResponse(RestResponse response) {}
 
   // subclasses can handle the thrown errors differently.
   // the default is just to throw it.
