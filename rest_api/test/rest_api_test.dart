@@ -133,12 +133,53 @@ void main() {
       expect(e, isA<NoConnectionError>());
     }
   });
+
+  test("RestApi adds override headers", () async {
+    // override the provided header with this.
+    final overrideHeaderValue = "Override value";
+
+    // a new header added this way.
+    final newHeaderName = "A_NEW_HEADER_NAME";
+    final newHeaderValue = "A_NEW_HEADER_VALUE";
+
+    // header providers for this one call.
+    final overrideHeaderProviders = [
+      _MockHeaderProvider(name: _headerName, value: overrideHeaderValue),
+      _MockHeaderProvider(name: newHeaderName, value: newHeaderValue),
+    ];
+
+    final expectedHeaders = {
+      _headerName: overrideHeaderValue,
+      newHeaderName: newHeaderValue,
+    };
+
+    when(_client.get(_fullUrl, headers: expectedHeaders))
+        .thenAnswer((_) async => Response(_mockJSON, 200));
+
+    final result = await restApi.get(
+      _endpoint,
+      queryParameters: {_keyA: _valueA, _keyB: _valueB},
+      jsonBody: JsonObject.fromString(_mockJSON),
+      headers: overrideHeaderProviders,
+    );
+
+    expect(result.statusCode, equals(200));
+    expect(result.body.toMap()["key"], equals("value"));
+  });
 }
 
 class _MockClient extends Mock implements Client {}
 
 /// Provides consistent headers that can be tested.
 class _MockHeaderProvider extends HeaderProvider {
+  final String name;
+  final String value;
+
+  const _MockHeaderProvider({
+    this.name = _headerName,
+    this.value = _headerValue,
+  });
+
   @override
-  Future<Header> getHeader() async => Header(name: _headerName, value: _headerValue);
+  Future<Header> getHeader() async => Header(name: name, value: value);
 }
