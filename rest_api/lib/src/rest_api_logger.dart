@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:rest_api/src/rest_api_impl.dart';
 
-import 'rest_api.dart';
+import 'rest_api_impl.dart';
 import 'json_object.dart';
 
 export 'json_object.dart';
