@@ -26,18 +26,19 @@ enum RestRequestType { post, get, put, delete }
 class RestApi {
   final RestApiLogger logger;
   final String baseUrl;
-  final List<HeaderProvider> headerProviders;
+  final List<HeaderProvider> defaultHeaderProviders;
   final Client clientOverride;
   final Duration timeout;
 
   /// [baseUrl] is the endpoint we're pointing at. It will be prepended to all requests.
-  /// [headerProviders] intercept the api calls, and will add any required headers.
+  /// [defaultHeaderProviders] intercept the api calls, and will add any required headers.
+  /// To add headers to indivudal calls use the [header] property on that that.
   /// [logger] is intercepts requests and logs them (nullable).
   /// [clientOverride] can be used to set a specific client. By default, it'll use a new client for each call.
   /// [timeout] is the duration the call will wait before giving out. Defaults to 30s
   const RestApi({
     @required this.baseUrl,
-    @required this.headerProviders,
+    @required this.defaultHeaderProviders,
     this.logger = const RestApiLogger(),
     this.clientOverride,
     this.timeout = _timeout,
@@ -48,69 +49,81 @@ class RestApi {
 
   /// Make a network call of type GET at the given [baseUrl] and [endpoint]
   /// after appending the [queryParameters] (nullable).
-  /// headers are added through the [headerProviders]
+  /// headers are added through the [defaultHeaderProviders]
   /// [jsonBody] is nullable
+  /// [headers] will be added in addition to the [defaultHeaders]
   Future<RestResponse> get(
     String endpoint, {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
+    List<HeaderProvider> headers,
   }) {
     return _makeRequest(
       RestRequestType.get,
       endpoint,
       jsonBody: jsonBody,
       queryParameters: queryParameters,
+      headerProviders: headers ?? [],
     );
   }
 
   /// Make a network call of type POST at the given [baseUrl] and [endpoint]
   /// after appending the [queryParameters] (nullable).
-  /// headers are added through the [headerProviders]
+  /// headers are added through the [defaultHeaderProviders]
   /// [jsonBody] is nullable
+  /// [headers] will be added in addition to the [defaultHeaders]
   Future<RestResponse> post(
     String endpoint, {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
+    List<HeaderProvider> headers,
   }) {
     return _makeRequest(
       RestRequestType.post,
       endpoint,
       jsonBody: jsonBody,
       queryParameters: queryParameters,
+      headerProviders: headers ?? [],
     );
   }
 
   /// Make a network call of type DELETE at the given [baseUrl] and [endpoint]
   /// after appending the [queryParameters] (nullable).
-  /// headers are added through the [headerProviders]
+  /// headers are added through the [defaultHeaderProviders]
   /// [jsonBody] is nullable
+  /// [headers] will be added in addition to the [defaultHeaders]
   Future<RestResponse> delete(
     String endpoint, {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
+    List<HeaderProvider> headers,
   }) {
     return _makeRequest(
       RestRequestType.delete,
       endpoint,
       jsonBody: jsonBody,
       queryParameters: queryParameters,
+      headerProviders: headers ?? [],
     );
   }
 
   /// Make a network call of type PUT at the given [baseUrl] and [endpoint]
   /// after appending the [queryParameters] (nullable).
-  /// headers are added through the [headerProviders]
+  /// headers are added through the [defaultHeaderProviders]
   /// [jsonBody] is nullable
+  /// [headers] will be added in addition to the [defaultHeaders]
   Future<RestResponse> put(
     String endpoint, {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
+    List<HeaderProvider> headers,
   }) {
     return _makeRequest(
       RestRequestType.put,
       endpoint,
       jsonBody: jsonBody,
       queryParameters: queryParameters,
+      headerProviders: headers,
     );
   }
 
@@ -118,8 +131,9 @@ class RestApi {
   Future<RestResponse> _makeRequest(
     RestRequestType requestType,
     String endpoint, {
-    JsonObject jsonBody,
-    Map<String, String> queryParameters,
+    @required JsonObject jsonBody,
+    @required Map<String, String> queryParameters,
+    @required List<HeaderProvider> headerProviders,
   }) async {
     assert(endpoint != null);
     assert(endpoint != "");
@@ -127,8 +141,14 @@ class RestApi {
     // Add the query parameters automatically.
     final url = _buildUrl(endpoint, queryParameters);
 
-    // add all the available headers.
-    final headers = await createHeaderMap(headerProviders);
+    // add the defaultHeaderProviders first, then add the extra ones so that
+    // they can override on a call by call basis.
+    final combinedHeaders = List<HeaderProvider>.from(defaultHeaderProviders ?? []);
+    if (headerProviders != null && headerProviders.isNotEmpty) {
+      combinedHeaders.addAll(headerProviders);
+    }
+
+    final headers = await createHeaderMap(combinedHeaders);
 
     logger?.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
 

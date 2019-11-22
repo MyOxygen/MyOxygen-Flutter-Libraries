@@ -31,7 +31,7 @@ void main() {
       baseUrl: _baseUrl,
       clientOverride: _client,
       logger: null, // no logging in tests.
-      headerProviders: [
+      defaultHeaderProviders: [
         _MockHeaderProvider(),
       ],
     );
