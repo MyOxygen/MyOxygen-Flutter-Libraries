@@ -13,8 +13,7 @@ class SnackBarPresenter {
   /// Present an information [SnackBar] in the provided [Scaffold].
   static void presentInformation(GlobalKey<ScaffoldState> scaffoldKey, String message,
       {Color iconColor}) {
-    // If the `iconColor` is null, it will default to the system color, whatever
-    // that may be.
+    // If the `iconColor` is null, it will default to the icon theme data color.
     _presentSnackbar(
       scaffoldKey,
       message,
