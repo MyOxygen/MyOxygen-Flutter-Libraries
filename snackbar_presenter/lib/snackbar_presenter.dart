@@ -67,7 +67,7 @@ class SnackBarPresenter {
       ),
     );
 
-    // Hide any currently showing SnackBar. If there are none, this will do
+    // Hide any currently showing SnackBars. If there are none, this will do
     // nothing.
     scaffoldKey.currentState.hideCurrentSnackBar();
 
