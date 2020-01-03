@@ -45,7 +45,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     if ((environments ?? []).isNotEmpty) {
       return environments[0];
     } else {
-      return null;
+      return widget.defaultEnvironment;
     }
   }
 
@@ -63,6 +63,9 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     }
 
     if (currentEnvironment == null) {
+      // On first run, we need to load the saved environment (if any). If none
+      // are saved, use the first in the list. If the list is empty, use the
+      // default.
       return FutureBuilder<Environment>(
         future: _getSavedEnvironmentOrDefault(),
         builder: (context, snapshot) {
