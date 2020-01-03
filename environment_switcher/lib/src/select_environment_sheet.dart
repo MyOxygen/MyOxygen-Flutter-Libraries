@@ -70,7 +70,7 @@ class _EnvironmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = "${type.description}\n${type.value}";
+    final subtitle = "${type.description}" + (type.value == null ? "" : "\n${type.value}");
 
     return ListTile(
       title: Text(
@@ -89,10 +89,10 @@ class _EnvironmentTile extends StatelessWidget {
 
   void _onTileSelected(BuildContext context) {
     /// if it's already selected, just close.
-    if (selected) {
-      Navigator.pop(context);
-    } else {
+    if (!selected) {
       onSelected?.call(type);
     }
+
+    Navigator.pop(context);
   }
 }
