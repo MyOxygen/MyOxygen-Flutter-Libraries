@@ -10,6 +10,7 @@ export 'environment_store.dart';
 class EnvironmentSwitcher extends StatefulWidget {
   final Widget Function(Environment) builder;
   final List<Environment> environments;
+  final Environment defaultEnvironment;
   final EnvironmentStore environmentStore;
   final bool showBanner;
 
@@ -22,9 +23,11 @@ class EnvironmentSwitcher extends StatefulWidget {
     @required this.environments,
     this.environmentStore, // mainly required for testing
     this.showBanner = true,
+    this.defaultEnvironment,
   })  : assert(builder != null),
         assert(environments != null && environments.length != 0),
-        assert(showBanner != null);
+        assert(showBanner != null),
+        assert(showBanner ? defaultEnvironment != null : true);
 
   @override
   State<StatefulWidget> createState() {
@@ -52,9 +55,11 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
   @override
   Widget build(BuildContext context) {
     // If we don't want to show the banner, we can hide it altogether easily.
-    // This also acts as a null-check.
+    // When this happens, we want to show the default environment no matter the
+    // previously saved environment
+    // Note: Adding "== false" also acts as a null-check.
     if (widget.showBanner == false) {
-      return const SizedBox();
+      return widget.builder?.call(widget.defaultEnvironment);
     }
 
     if (currentEnvironment == null) {
