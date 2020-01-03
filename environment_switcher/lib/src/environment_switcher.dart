@@ -49,15 +49,6 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
   _StateEnvironmentSwitcher(this.environments, EnvironmentStore store)
       : environmentStore = store ?? EnvironmentStore(store: Store());
 
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   if ((environments ?? []).isNotEmpty) {
-  //     currentEnvironment = firstEnvironmentOrDefault;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     // If we don't want to show the banner, we can hide it altogether easily.
@@ -66,28 +57,25 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
       return const SizedBox();
     }
 
-    return FutureBuilder<Environment>(
-      future: _getSavedEnvironmentOrDefault(),
-      builder: (context, snapshot) {
-        currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
-        return Directionality(
-          textDirection: TextDirection.ltr,
-          child: (currentEnvironment == null || !currentEnvironment.isNameValid)
-              ? widget.builder?.call(currentEnvironment)
-              : Stack(
-                  children: <Widget>[
-                    Banner(
-                      message: currentEnvironment.name,
-                      location: BannerLocation.topEnd,
-                      color: currentEnvironment.bannerColor,
-                      child: widget.builder.call(currentEnvironment),
-                    ),
-                    _BannerHitBox(onTap: _onBannerTapped),
-                  ],
-                ),
-        );
-      },
-    );
+    if (currentEnvironment == null) {
+      return FutureBuilder<Environment>(
+        future: _getSavedEnvironmentOrDefault(),
+        builder: (context, snapshot) {
+          currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
+          return _Banner(
+            environment: currentEnvironment,
+            child: widget.builder?.call(currentEnvironment),
+            onBannerTapped: _onBannerTapped,
+          );
+        },
+      );
+    } else {
+      return _Banner(
+        environment: currentEnvironment,
+        child: widget.builder?.call(currentEnvironment),
+        onBannerTapped: _onBannerTapped,
+      );
+    }
   }
 
   Future<Environment> _getSavedEnvironmentOrDefault() async {
@@ -129,6 +117,40 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     } catch (e) {
       print(e.toString());
     }
+  }
+}
+
+class _Banner extends StatelessWidget {
+  final Environment environment;
+  final Widget child;
+  final void Function(BuildContext) onBannerTapped;
+
+  const _Banner({
+    @required this.environment,
+    @required this.child,
+    @required this.onBannerTapped,
+  })  : assert(environment != null),
+        assert(child != null),
+        assert(onBannerTapped != null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: (environment == null || !environment.isNameValid)
+          ? child
+          : Stack(
+              children: <Widget>[
+                Banner(
+                  message: environment.name,
+                  location: BannerLocation.topEnd,
+                  color: environment.bannerColor,
+                  child: child,
+                ),
+                _BannerHitBox(onTap: onBannerTapped),
+              ],
+            ),
+    );
   }
 }
 
