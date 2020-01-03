@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'environment.dart';
-import 'environment_bloc.dart';
-import 'environment_bloc_event.dart';
 
 export 'environment.dart';
 
@@ -13,17 +10,20 @@ class SelectEnvironmentSheet extends StatelessWidget {
   static const _textPadding = EdgeInsets.symmetric(horizontal: 20);
 
   final List<Environment> environments;
+  final Environment currentEnvironment;
+  final void Function(Environment) onNewEnvironmentSelected;
 
   SelectEnvironmentSheet({
     @required this.environments,
-  }) : assert(environments != null && environments.isNotEmpty);
+    @required this.currentEnvironment,
+    @required this.onNewEnvironmentSelected,
+  })  : assert(environments != null && environments.isNotEmpty),
+        assert(currentEnvironment != null),
+        assert(onNewEnvironmentSelected != null);
 
   @override
   Widget build(BuildContext context) {
-    final environmentBloc = BlocProvider.of<EnvironmentBloc>(context);
-    final currentEnvironment = environmentBloc.state.environment;
-
-    final builtWidget = SafeArea(
+    return SafeArea(
       child: SingleChildScrollView(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,24 +47,26 @@ class SelectEnvironmentSheet extends StatelessWidget {
           ...environments.map((type) => _EnvironmentTile(
                 type,
                 selected: type == currentEnvironment,
+                onSelected: onNewEnvironmentSelected,
               )),
         ],
       )),
     );
-
-    environmentBloc.close();
-
-    return builtWidget;
   }
 }
 
 class _EnvironmentTile extends StatelessWidget {
   final Environment type;
   final bool selected;
+  final void Function(Environment) onSelected;
 
-  const _EnvironmentTile(this.type, {@required this.selected})
-      : assert(type != null),
-        assert(selected != null);
+  const _EnvironmentTile(
+    this.type, {
+    @required this.selected,
+    @required this.onSelected,
+  })  : assert(type != null),
+        assert(selected != null),
+        assert(onSelected != null);
 
   @override
   Widget build(BuildContext context) {
@@ -86,17 +88,11 @@ class _EnvironmentTile extends StatelessWidget {
   }
 
   void _onTileSelected(BuildContext context) {
-    final environmentBloc = BlocProvider.of<EnvironmentBloc>(context);
-
     /// if it's already selected, just close.
-    if (environmentBloc.state.environment == type) {
+    if (selected) {
       Navigator.pop(context);
     } else {
-      BlocProvider.of<EnvironmentBloc>(context).add(
-        ChangeEnvironmentEvent(type),
-      );
+      onSelected?.call(type);
     }
-
-    environmentBloc.close();
   }
 }

@@ -13,6 +13,8 @@ class Environment extends Equatable {
   final String databaseName;
   final String value;
 
+  bool get isNameValid => name != null && name.trim().isNotEmpty;
+
   Environment({
     @required this.name,
     @required this.description,
