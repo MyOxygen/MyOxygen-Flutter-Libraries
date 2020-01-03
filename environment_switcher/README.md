@@ -30,6 +30,7 @@ The code below is simply a simplified copy of the example project.
 
 ```dart
 
+// List of environments
 final environments = [
     Environment(
         name: "Mock Blue",
@@ -45,14 +46,14 @@ final environments = [
     ),
     ...
     // Add more environments if you so wish
-    ),
+];
 
     Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false, // Important!!
-        title: 'EnvironmentSwitcher Demo',
-        home: MyHomePage(title: 'EnvironmentSwitcher Home Page'),
-    );
+        return MaterialApp(
+            debugShowCheckedModeBanner: false, // Important!!
+            title: 'EnvironmentSwitcher Demo',
+            home: MyHomePage(title: 'EnvironmentSwitcher Home Page'),
+        );
     }
 ];
 
@@ -70,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     void _incrementCounter() {
         setState(() {
-        _counter++;
+            _counter++;
         });
     }
 
