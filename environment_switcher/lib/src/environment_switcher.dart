@@ -1,79 +1,134 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'environment.dart';
-import 'environment_bloc.dart';
-import 'environment_bloc_state.dart';
 import 'environment_store.dart';
 import 'select_environment_sheet.dart';
 
 export 'environment.dart';
+export 'environment_store.dart';
 
 class EnvironmentSwitcher extends StatefulWidget {
-  final Widget child;
+  final Widget Function(Environment) builder;
   final List<Environment> environments;
+  final EnvironmentStore environmentStore;
+  final bool showBanner;
 
   /// A banner that visually shows the user what [Environment]
   /// is currently set to.
   /// This is useful because it's possible to be on one Flavour
   /// in the native code, and another in the Flutter code.
   const EnvironmentSwitcher({
-    @required this.child,
+    @required this.builder,
     @required this.environments,
-  })  : assert(child != null),
-        assert(environments != null && environments.length != 0);
+    this.environmentStore, // mainly required for testing
+    this.showBanner = true,
+  })  : assert(builder != null),
+        assert(environments != null && environments.length != 0),
+        assert(showBanner != null);
 
   @override
   State<StatefulWidget> createState() {
-    return _StateEnvironmentSwitcher(environments);
+    return _StateEnvironmentSwitcher(environments, environmentStore);
   }
 }
 
 class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
-  final EnvironmentBloc bloc;
+  final List<Environment> environments;
+  final EnvironmentStore environmentStore;
 
-  _StateEnvironmentSwitcher(List<Environment> environments)
-      : bloc = EnvironmentBloc(
-          environments: environments,
-          environmentStore: EnvironmentStore(store: Store()),
-        );
+  Environment currentEnvironment;
 
-  @override
-  void initState() {
-    super.initState();
+  Environment get firstEnvironmentOrDefault {
+    if ((environments ?? []).isNotEmpty) {
+      return environments[0];
+    } else {
+      return null;
+    }
   }
+
+  _StateEnvironmentSwitcher(this.environments, EnvironmentStore store)
+      : environmentStore = store ?? EnvironmentStore(store: Store());
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   if ((environments ?? []).isNotEmpty) {
+  //     currentEnvironment = firstEnvironmentOrDefault;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: BlocBuilder<EnvironmentBloc, EnvironmentBlocState>(
-        builder: (context, state) {
-          if (state.environment == null || state.bannerText == null || state.bannerText == "") {
-            return widget.child;
-          }
+    // If we don't want to show the banner, we can hide it altogether easily.
+    // This also acts as a null-check.
+    if (widget.showBanner == false) {
+      return const SizedBox();
+    }
 
-          return Stack(
-            children: <Widget>[
-              Banner(
-                message: state.bannerText,
-                location: BannerLocation.topEnd,
-                color: state.bannerColor,
-                child: widget.child,
-              ),
-              _BannerHitBox(onTap: _onBannerTapped),
-            ],
-          );
-        },
-      ),
+    return FutureBuilder<Environment>(
+      future: _getSavedEnvironmentOrDefault(),
+      builder: (context, snapshot) {
+        currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: (currentEnvironment == null || !currentEnvironment.isNameValid)
+              ? widget.builder?.call(currentEnvironment)
+              : Stack(
+                  children: <Widget>[
+                    Banner(
+                      message: currentEnvironment.name,
+                      location: BannerLocation.topEnd,
+                      color: currentEnvironment.bannerColor,
+                      child: widget.builder.call(currentEnvironment),
+                    ),
+                    _BannerHitBox(onTap: _onBannerTapped),
+                  ],
+                ),
+        );
+      },
     );
+  }
+
+  Future<Environment> _getSavedEnvironmentOrDefault() async {
+    try {
+      final savedEnvironmentName = await environmentStore.getSavedEnvironment();
+      if (savedEnvironmentName == null) {
+        throw "No environment saved";
+      }
+      final environment =
+          environments.firstWhere((env) => env.name == savedEnvironmentName, orElse: () => null);
+      if (environment == null) {
+        throw "Environment not found in list";
+      }
+      return environment;
+    } catch (e) {
+      print(e.toString());
+    }
+
+    return firstEnvironmentOrDefault;
   }
 
   void _onBannerTapped(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SelectEnvironmentSheet(environments: widget.environments),
+      builder: (_) => SelectEnvironmentSheet(
+        environments: widget.environments,
+        currentEnvironment: currentEnvironment,
+        onNewEnvironmentSelected: _onNewEvironmentTapped,
+      ),
     );
+  }
+
+  Future<void> _onNewEvironmentTapped(Environment newEnvironment) async {
+    try {
+      await environmentStore.saveEnvironment(newEnvironment);
+      setState(() {
+        currentEnvironment = newEnvironment;
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
 
