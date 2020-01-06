@@ -70,13 +70,11 @@ class _EnvironmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = "${type.description}" + (type.value == null ? "" : "\n${type.value}");
-
     return ListTile(
       title: Text(
         type.name,
       ),
-      subtitle: Text(subtitle),
+      subtitle: Text(type.description),
       leading: selected
           ? Icon(
               Icons.check,

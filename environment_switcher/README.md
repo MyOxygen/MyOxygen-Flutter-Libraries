@@ -36,13 +36,11 @@ final environments = [
         name: "Mock Blue",
         description: "A blue mock environment",
         bannerColor: Colors.blue,
-        databaseName: "mockB",
     ),
     Environment(
         name: "Mock Green",
         description: "A green mock environment",
         bannerColor: Colors.green,
-        databaseName: "mockG",
     ),
     ...
     // Add more environments if you so wish
