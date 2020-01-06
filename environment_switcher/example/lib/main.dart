@@ -87,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return EnvironmentSwitcher(
       environments: environments,
+      defaultEnvironment: environments[0],
       childBuilder: (context, environment) => Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by

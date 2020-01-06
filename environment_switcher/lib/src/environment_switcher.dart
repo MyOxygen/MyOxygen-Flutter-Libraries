@@ -8,11 +8,18 @@ export 'environment.dart';
 export 'environment_store.dart';
 
 class EnvironmentSwitcher extends StatefulWidget {
+  static const _title = "Select Environment";
+  static const _description = "This switcher will not be present in the live version of the "
+      "app. It's here to quickly switch between various environments (for example, live or "
+      "mock data). It'll restart the app in order to make sure all the data is fresh.";
+
   final Widget Function(BuildContext, Environment) childBuilder;
   final List<Environment> environments;
   final Environment defaultEnvironment;
   final EnvironmentStore _environmentStore;
   final bool showBanner;
+  final String selectionTitle;
+  final String selectionDescription;
 
   /// A banner that visually shows the user what [Environment]
   /// is currently set to.
@@ -22,11 +29,15 @@ class EnvironmentSwitcher extends StatefulWidget {
     EnvironmentStore environmentStore, // mainly required for testing
     this.showBanner = true,
     this.defaultEnvironment,
+    this.selectionTitle = _title,
+    this.selectionDescription = _description,
   })  : assert(childBuilder != null),
         assert(environments != null && environments.length != 0),
         assert(showBanner != null),
         assert(showBanner ? defaultEnvironment != null : true,
             "The EnvironmentSwitcher needs a default environment if the banner is showing."),
+        assert(selectionTitle != null && selectionTitle.trim().isNotEmpty),
+        assert(selectionDescription != null && selectionDescription.trim().isNotEmpty),
         _environmentStore = environmentStore ?? EnvironmentStore(store: Store());
 
   @override
@@ -102,6 +113,8 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
         environments: widget.environments,
         currentEnvironment: currentEnvironment,
         onNewEnvironmentSelected: _onNewEvironmentTapped,
+        title: widget.selectionTitle,
+        description: widget.selectionDescription,
       ),
     );
   }

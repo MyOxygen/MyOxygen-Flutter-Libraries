@@ -12,14 +12,20 @@ class SelectEnvironmentSheet extends StatelessWidget {
   final List<Environment> environments;
   final Environment currentEnvironment;
   final void Function(Environment) onNewEnvironmentSelected;
+  final String title;
+  final String description;
 
-  const SelectEnvironmentSheet({
+  SelectEnvironmentSheet({
     @required this.environments,
     @required this.currentEnvironment,
     @required this.onNewEnvironmentSelected,
-  })  : assert(environments != null && environments.length != 0),
+    @required this.title,
+    @required this.description,
+  })  : assert(environments != null && environments.isNotEmpty),
         assert(currentEnvironment != null),
-        assert(onNewEnvironmentSelected != null);
+        assert(onNewEnvironmentSelected != null),
+        assert(title != null && title.trim().isNotEmpty),
+        assert(description != null && description.trim().isNotEmpty);
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +37,15 @@ class SelectEnvironmentSheet extends StatelessWidget {
           Padding(
             padding: _titlePadding,
             child: Text(
-              "Select Environment",
+              title,
               style: Theme.of(context).textTheme.subtitle,
             ),
           ),
           Padding(
             padding: _textPadding,
             child: Text(
-              "This switcher will not be present in the live version of the "
-              "app. It's here to quickly switch between using the server and "
-              "mock data. It'll restart the app in order to make sure all the "
-              "data is fresh.",
+              description,
+              textAlign: TextAlign.justify,
             ),
           ),
           ...environments.map((type) => _EnvironmentTile(
