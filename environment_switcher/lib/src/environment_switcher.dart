@@ -16,8 +16,6 @@ class EnvironmentSwitcher extends StatefulWidget {
 
   /// A banner that visually shows the user what [Environment]
   /// is currently set to.
-  /// This is useful because it's possible to be on one Flavour
-  /// in the native code, and another in the Flutter code.
   const EnvironmentSwitcher({
     @required this.builder,
     @required this.environments,
