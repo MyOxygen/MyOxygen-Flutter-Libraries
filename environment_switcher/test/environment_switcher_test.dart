@@ -28,6 +28,7 @@ Widget _app() {
       builder: (context) => EnvironmentSwitcher(
         environments: environments,
         environmentStore: _MockEnvironmentStore(),
+        defaultEnvironment: environments[0],
         childBuilder: (env) => Material(
           child: Scaffold(
             body: Center(

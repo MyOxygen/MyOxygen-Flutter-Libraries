@@ -25,7 +25,8 @@ class EnvironmentSwitcher extends StatefulWidget {
   })  : assert(childBuilder != null),
         assert(environments != null && environments.length != 0),
         assert(showBanner != null),
-        assert(showBanner ? defaultEnvironment != null : true),
+        assert(showBanner ? defaultEnvironment != null : true,
+            "The EnvironmentSwitcher needs a default environment if the banner is showing."),
         _environmentStore = environmentStore ?? EnvironmentStore(store: Store());
 
   @override
