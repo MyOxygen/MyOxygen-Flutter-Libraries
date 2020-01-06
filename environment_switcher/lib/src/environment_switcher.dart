@@ -81,22 +81,18 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
   }
 
   Future<Environment> _getSavedEnvironmentOrDefault() async {
-    try {
-      final savedEnvironmentName = await widget._environmentStore.getSavedEnvironment();
-      if (savedEnvironmentName == null) {
-        throw "No environment saved";
-      }
-      final environment = widget.environments
-          .firstWhere((env) => env.name == savedEnvironmentName, orElse: () => null);
-      if (environment == null) {
-        throw "Environment not found in list";
-      }
-      return environment;
-    } catch (e) {
-      print(e.toString());
+    final savedEnvironmentName = await widget._environmentStore.getSavedEnvironment();
+    if (savedEnvironmentName == null) {
+      print("No environment saved");
+      return firstEnvironmentOrDefault;
     }
-
-    return firstEnvironmentOrDefault;
+    final environment = widget.environments
+        ?.firstWhere((env) => env.name == savedEnvironmentName, orElse: () => null);
+    if (environment == null) {
+      print("Environment not found in list");
+      return firstEnvironmentOrDefault;
+    }
+    return environment;
   }
 
   void _onBannerTapped(BuildContext context) {
