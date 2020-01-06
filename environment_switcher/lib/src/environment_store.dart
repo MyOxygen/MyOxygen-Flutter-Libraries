@@ -16,15 +16,10 @@ class EnvironmentStore {
   }) : assert(store != null);
 
   Future<String> getSavedEnvironment() async {
-    final environmentName = await store.getString(_environmentKey);
-    return environmentName;
+    return await store.getString(_environmentKey);
   }
 
   Future<void> saveEnvironment(Environment environment) async {
-    if (environment == null) {
-      await store.setString(null, key: _environmentKey);
-    } else {
-      await store.setString(environment.name, key: _environmentKey);
-    }
+    await store.setString(environment?.name, key: _environmentKey);
   }
 }
