@@ -16,7 +16,7 @@ environment_switcher:
 
 ### Constructor Arguments
 
-- `builder` - This is the builder for the child on which the `EnvironmentSwitcher` will be built on top of.
+- `childBuilder` - This is the builder for the child on which the `EnvironmentSwitcher` will be built on top of.
 - `environments` - This is a list of `Environment` objects that will be displayed in the switcher for the tester to choose from. This cannot be empty.
 - `environmentStore` - [Optional] This is preferences storage extension that can be used. The default `EnvironmentStorage` object uses the [MyOxygen Store package](https://github.com/MyOxygen/MyOxygen-Flutter-Libraries/tree/Environment-Switcher/store) to store the last used `Environment`.
 - `showBanner` - [Optional] This simply hides the banner from view. The idea is that on a Production release, developers can simply toggle this flag to disable the switcher. Default: `true`.
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // page has its own EnvironmentSwitcher.
         return EnvironmentSwitcher(
             environments: environments,
-            builder: (environment) => 
+            childBuilder: (environment) => 
                 Scaffold(
                     appBar: AppBar(title: Text(widget.title)),
                     body: Center(
@@ -122,7 +122,7 @@ Widget build(BuildContext context) {
     // MaterialLocalizations, and Navigator, which are initialised in the
     // MaterialApp widget.
     return EnvironmentSwitcher(
-        builder: (environment) => 
+        childBuilder: (environment) => 
             MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'EnvironmentSwitcher Demo',
@@ -145,7 +145,7 @@ Widget build(BuildContext context) {
         debugShowCheckedModeBanner: false,
         title: 'EnvironmentSwitcher Demo',
         home: EnvironmentSwitcher(
-            builder: (environment) => 
+            childBuilder: (environment) => 
                 MyHomePage(title: 'EnvironmentSwitcher Demo Home Page'),
         ),
     );
@@ -170,7 +170,7 @@ class MyHomePage extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return EnvironmentSwitcher(
-            builder: (environment) => 
+            childBuilder: (environment) => 
                 Scaffold(
                     body: Center(
                         child: Text("Current environment: ${environment.name}"),

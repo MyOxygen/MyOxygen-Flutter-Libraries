@@ -8,47 +8,42 @@ export 'environment.dart';
 export 'environment_store.dart';
 
 class EnvironmentSwitcher extends StatefulWidget {
-  final Widget Function(Environment) builder;
+  final Widget Function(Environment) childBuilder;
   final List<Environment> environments;
   final Environment defaultEnvironment;
-  final EnvironmentStore environmentStore;
+  final EnvironmentStore _environmentStore;
   final bool showBanner;
 
   /// A banner that visually shows the user what [Environment]
   /// is currently set to.
-  const EnvironmentSwitcher({
-    @required this.builder,
+  EnvironmentSwitcher({
+    @required this.childBuilder,
     @required this.environments,
-    this.environmentStore, // mainly required for testing
+    EnvironmentStore environmentStore, // mainly required for testing
     this.showBanner = true,
     this.defaultEnvironment,
-  })  : assert(builder != null),
+  })  : assert(childBuilder != null),
         assert(environments != null && environments.length != 0),
         assert(showBanner != null),
-        assert(showBanner ? defaultEnvironment != null : true);
+        assert(showBanner ? defaultEnvironment != null : true),
+        _environmentStore = environmentStore ?? EnvironmentStore(store: Store());
 
   @override
   State<StatefulWidget> createState() {
-    return _StateEnvironmentSwitcher(environments, environmentStore);
+    return _StateEnvironmentSwitcher();
   }
 }
 
 class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
-  final List<Environment> environments;
-  final EnvironmentStore environmentStore;
-
   Environment currentEnvironment;
 
   Environment get firstEnvironmentOrDefault {
-    if ((environments ?? []).isNotEmpty) {
-      return environments[0];
+    if ((widget.environments ?? []).isNotEmpty) {
+      return widget.environments[0];
     } else {
       return widget.defaultEnvironment;
     }
   }
-
-  _StateEnvironmentSwitcher(this.environments, EnvironmentStore store)
-      : environmentStore = store ?? EnvironmentStore(store: Store());
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +52,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     // previously saved environment
     // Note: Adding "== false" also acts as a null-check.
     if (widget.showBanner == false) {
-      return widget.builder?.call(widget.defaultEnvironment);
+      return widget.childBuilder?.call(widget.defaultEnvironment);
     }
 
     if (currentEnvironment == null) {
@@ -70,7 +65,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
           currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
           return _Banner(
             environment: currentEnvironment,
-            child: widget.builder?.call(currentEnvironment),
+            child: widget.childBuilder?.call(currentEnvironment),
             onBannerTapped: _onBannerTapped,
           );
         },
@@ -78,7 +73,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     } else {
       return _Banner(
         environment: currentEnvironment,
-        child: widget.builder?.call(currentEnvironment),
+        child: widget.childBuilder?.call(currentEnvironment),
         onBannerTapped: _onBannerTapped,
       );
     }
@@ -86,12 +81,12 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
 
   Future<Environment> _getSavedEnvironmentOrDefault() async {
     try {
-      final savedEnvironmentName = await environmentStore.getSavedEnvironment();
+      final savedEnvironmentName = await widget._environmentStore.getSavedEnvironment();
       if (savedEnvironmentName == null) {
         throw "No environment saved";
       }
-      final environment =
-          environments.firstWhere((env) => env.name == savedEnvironmentName, orElse: () => null);
+      final environment = widget.environments
+          .firstWhere((env) => env.name == savedEnvironmentName, orElse: () => null);
       if (environment == null) {
         throw "Environment not found in list";
       }
@@ -116,7 +111,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
 
   Future<void> _onNewEvironmentTapped(Environment newEnvironment) async {
     try {
-      await environmentStore.saveEnvironment(newEnvironment);
+      await widget._environmentStore.saveEnvironment(newEnvironment);
       setState(() {
         currentEnvironment = newEnvironment;
       });
