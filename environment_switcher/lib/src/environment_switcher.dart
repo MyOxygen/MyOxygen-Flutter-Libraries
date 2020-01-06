@@ -8,7 +8,7 @@ export 'environment.dart';
 export 'environment_store.dart';
 
 class EnvironmentSwitcher extends StatefulWidget {
-  final Widget Function(Environment) childBuilder;
+  final Widget Function(BuildContext, Environment) childBuilder;
   final List<Environment> environments;
   final Environment defaultEnvironment;
   final EnvironmentStore _environmentStore;
@@ -53,7 +53,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     // previously saved environment
     // Note: Adding "== false" also acts as a null-check.
     if (widget.showBanner == false) {
-      return widget.childBuilder?.call(widget.defaultEnvironment);
+      return widget.childBuilder?.call(context, widget.defaultEnvironment);
     }
 
     if (currentEnvironment == null) {
@@ -66,7 +66,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
           currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
           return _Banner(
             environment: currentEnvironment,
-            child: widget.childBuilder?.call(currentEnvironment),
+            child: widget.childBuilder?.call(context, currentEnvironment),
             onBannerTapped: _onBannerTapped,
           );
         },
@@ -74,7 +74,7 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     } else {
       return _Banner(
         environment: currentEnvironment,
-        child: widget.childBuilder?.call(currentEnvironment),
+        child: widget.childBuilder?.call(context, currentEnvironment),
         onBannerTapped: _onBannerTapped,
       );
     }
