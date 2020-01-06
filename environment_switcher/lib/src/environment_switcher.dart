@@ -1,3 +1,4 @@
+import 'package:environment_switcher/environment_switcher.dart';
 import 'package:flutter/material.dart';
 
 import 'environment.dart';
@@ -7,13 +8,30 @@ import 'select_environment_sheet.dart';
 export 'environment.dart';
 export 'environment_store.dart';
 
+/// Inherited widget to allow access to the current environment field of the
+/// state.
+class _EnvironmentSwitcher extends InheritedWidget {
+  final Environment currentEnvironment;
+
+  _EnvironmentSwitcher({
+    Key key,
+    @required Widget child,
+    @required this.currentEnvironment,
+  }) : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(InheritedWidget oldWidget) {
+    return true;
+  }
+}
+
 class EnvironmentSwitcher extends StatefulWidget {
   static const _title = "Select Environment";
   static const _description = "This switcher will not be present in the live version of the "
       "app. It's here to quickly switch between various environments (for example, live or "
       "mock data). It'll restart the app in order to make sure all the data is fresh.";
 
-  final Widget Function(BuildContext, Environment) childBuilder;
+  final Widget Function(BuildContext) childBuilder;
   final List<Environment> environments;
   final Environment defaultEnvironment;
   final EnvironmentStore _environmentStore;
@@ -44,6 +62,10 @@ class EnvironmentSwitcher extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _StateEnvironmentSwitcher();
   }
+
+  static _EnvironmentSwitcher of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_EnvironmentSwitcher>();
+  }
 }
 
 class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
@@ -58,13 +80,21 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.showBanner == false) {
+      currentEnvironment = widget.defaultEnvironment;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // If we don't want to show the banner, we can hide it altogether easily.
     // When this happens, we want to show the default environment no matter the
     // previously saved environment
     // Note: Adding "== false" also acts as a null-check.
     if (widget.showBanner == false) {
-      return widget.childBuilder?.call(context, widget.defaultEnvironment);
+      return widget.childBuilder?.call(context);
     }
 
     if (currentEnvironment == null) {
@@ -75,20 +105,24 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
         future: _getSavedEnvironmentOrDefault(),
         builder: (context, snapshot) {
           currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
-          return _Banner(
-            environment: currentEnvironment,
-            child: widget.childBuilder?.call(context, currentEnvironment),
-            onBannerTapped: _onBannerTapped,
-          );
+          return _buildBanner(context, currentEnvironment);
         },
       );
     } else {
-      return _Banner(
-        environment: currentEnvironment,
-        child: widget.childBuilder?.call(context, currentEnvironment),
-        onBannerTapped: _onBannerTapped,
-      );
+      return _buildBanner(context, currentEnvironment);
     }
+  }
+
+  Widget _buildBanner(BuildContext context, Environment environment) {
+    return _EnvironmentSwitcher(
+      currentEnvironment: environment,
+      child: _Banner(
+        child: Builder(
+          builder: (context) => widget.childBuilder?.call(context),
+        ),
+        onBannerTapped: _onBannerTapped,
+      ),
+    );
   }
 
   Future<Environment> _getSavedEnvironmentOrDefault() async {
@@ -132,20 +166,18 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
 }
 
 class _Banner extends StatelessWidget {
-  final Environment environment;
   final Widget child;
   final void Function(BuildContext) onBannerTapped;
 
   const _Banner({
-    @required this.environment,
     @required this.child,
     @required this.onBannerTapped,
-  })  : assert(environment != null),
-        assert(child != null),
+  })  : assert(child != null),
         assert(onBannerTapped != null);
 
   @override
   Widget build(BuildContext context) {
+    final environment = EnvironmentSwitcher.of(context)?.currentEnvironment;
     return Directionality(
       textDirection: TextDirection.ltr,
       child: (environment == null || !environment.isNameValid)

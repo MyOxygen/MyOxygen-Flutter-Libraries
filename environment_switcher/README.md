@@ -79,8 +79,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // page has its own EnvironmentSwitcher.
         return EnvironmentSwitcher(
             environments: environments,
-            childBuilder: (environment) => 
-                Scaffold(
+            defaultEnvironment: environments[0],
+            childBuilder: (context) {
+                // Obtain the current environment by calling the ancestor.
+                final environment = EnvironmentSwitcher.of(context).currentEnvironment;
+
+                return Scaffold(
                     appBar: AppBar(title: Text(widget.title)),
                     body: Center(
                         child: Column(
@@ -104,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         tooltip: 'Increment',
                         child: Icon(Icons.add),
                     ),
-                ),
+                );
+            }
         );
     }
 }
