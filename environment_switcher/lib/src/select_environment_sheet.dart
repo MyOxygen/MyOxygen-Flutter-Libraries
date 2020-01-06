@@ -13,11 +13,11 @@ class SelectEnvironmentSheet extends StatelessWidget {
   final Environment currentEnvironment;
   final void Function(Environment) onNewEnvironmentSelected;
 
-  SelectEnvironmentSheet({
+  const SelectEnvironmentSheet({
     @required this.environments,
     @required this.currentEnvironment,
     @required this.onNewEnvironmentSelected,
-  })  : assert(environments != null && environments.isNotEmpty),
+  })  : assert(environments != null && environments.length != 0),
         assert(currentEnvironment != null),
         assert(onNewEnvironmentSelected != null);
 
