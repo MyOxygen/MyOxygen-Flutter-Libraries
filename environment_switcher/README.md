@@ -16,11 +16,20 @@ environment_switcher:
 
 ### Constructor Arguments
 
+#### EnvironmentSwitcher
+
 - `childBuilder` - This is the builder for the child on which the `EnvironmentSwitcher` will be built on top of.
 - `environments` - This is a list of `Environment` objects that will be displayed in the switcher for the tester to choose from. This cannot be empty.
-- `environmentStore` - [Optional] This is preferences storage extension that can be used. The default `EnvironmentStorage` object uses the [MyOxygen Store package](https://github.com/MyOxygen/MyOxygen-Flutter-Libraries/tree/Environment-Switcher/store) to store the last used `Environment`.
+- `defaultEnvironment` - This sets the environment to use when either there is an issue with loading the saved environment, or when the banner is not shown (`showBanner: false`).
 - `showBanner` - [Optional] This simply hides the banner from view. The idea is that on a Production release, developers can simply toggle this flag to disable the switcher. Default: `true`.
-- `defaultEnvironment` - [Optional] This sets the environment to use when the banner is not show (`showBanner: false`). This is an optional parameter, but **must** be set when `showBanner` is `true`.
+- `environmentStore` - [Optional] This is preferences storage extension that can be used. The default `EnvironmentStorage` object uses the [MyOxygen Store package](https://github.com/MyOxygen/MyOxygen-Flutter-Libraries/tree/Environment-Switcher/store) to store the last used `Environment`.
+
+#### Environment
+
+- `name` - The name of the environment. This acts as the "header/title" of the environment.
+- `description` - A short description explaining what makes this object different to another [Environment] object.
+- `bannerColor` - The colour of the banner to easily show which environment is active.
+- `values` - Any additional information per object should be passed here. This utilises and abstract class, with the idea that it should be extended to provide tests and assertions where necessary.
 
 ### Example Use
 
@@ -117,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 **Important**
 
-> Repeatedly putting `EnvironmentSwitcher` at the top of each page is really annoying. I'll just put it in the `MaterialApp` builder/home properties. Better yet I'll put it above the `MaterialApp` so it covers all the app!
+> Repeatedly putting `EnvironmentSwitcher` at the top of each page is really annoying. I'll just put it in the `MaterialApp` builder/home properties. Better yet, I'll put it above the `MaterialApp` so it covers all the app!
 
 NO! The `EnvironmentSwitcher` makes use of the modal bottom sheet, which in turn utilises instances of `MediaQuery`, `MaterialLocalizations`, and `Navigator`. The `MaterialApp` widget initialises instances of `MediaQuery` and `MaterialLocalizations` in its build, so that subsequent widgets can call `MediaQuery.of(context)` to access properties like screen size. Putting `EnvironmentSwitcher` above `MaterialApp` simply means the widget will not be able to access those instances, which will result in no modal sheet, and a multitude of error messages in the console.
 
@@ -181,6 +190,39 @@ class MyHomePage extends StatelessWidget {
                         child: Text("Current environment: ${environment.name}"),
                     ),
                 ),
+        );
+    }
+}
+```
+
+Alternatively, if it is super tedious, you can use the `Builder` widget:
+
+
+```dart
+Widget build(BuildContext context) {
+    // It works!
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'EnvironmentSwitcher Demo',
+        home: Builder(
+            builder: (_) => EnvironmentSwitcher(
+                environments: environments,
+                defaultEnvironment: environments[0],
+                childBuilder: (__) => MyHomePage(title: 'Flutter Demo Home Page'),
+            ),
+        ),
+    );
+}
+
+class MyHomePage extends StatelessWidget {
+    ...
+    @override
+    Widget build(BuildContext context) {
+        final environment = EnvironmentSwitcher.of(context).currentEnvironment;
+        return Scaffold(
+            body: Center(
+                child: Text("Current environment: ${environment.name}"),
+            ),
         );
     }
 }

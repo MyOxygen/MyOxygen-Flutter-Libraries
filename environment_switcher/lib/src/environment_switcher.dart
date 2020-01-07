@@ -10,29 +10,29 @@ export 'environment_store.dart';
 
 /// Inherited widget to allow access to the current environment field of the
 /// state.
-class _EnvironmentSwitcher extends InheritedWidget {
-  final Environment currentEnvironment;
+class InheritedEnvironmentSwitcher<T extends EnvironmentData> extends InheritedWidget {
+  final Environment<T> currentEnvironment;
 
-  _EnvironmentSwitcher({
+  InheritedEnvironmentSwitcher({
     Key key,
     @required Widget child,
     @required this.currentEnvironment,
   }) : super(key: key, child: child);
 
   @override
-  bool updateShouldNotify(InheritedWidget oldWidget) {
-    return true;
+  bool updateShouldNotify(InheritedEnvironmentSwitcher<T> oldWidget) {
+    return oldWidget.currentEnvironment != currentEnvironment;
   }
 }
 
-class EnvironmentSwitcher extends StatefulWidget {
+class EnvironmentSwitcher<T extends EnvironmentData> extends StatefulWidget {
   static const _title = "Select Environment";
   static const _description = "This switcher will not be present in the live version of the "
       "app. It's here to quickly switch between various environments (for example, live or "
       "mock data). It'll restart the app in order to make sure all the data is fresh.";
 
   final Widget Function(BuildContext) childBuilder;
-  final List<Environment> environments;
+  final List<Environment<T>> environments;
   final Environment defaultEnvironment;
   final EnvironmentStore _environmentStore;
   final bool showBanner;
@@ -41,49 +41,54 @@ class EnvironmentSwitcher extends StatefulWidget {
 
   /// A banner that visually shows the user what [Environment]
   /// is currently set to.
+  /// - `childBuilder` - This is the builder for the child on which the
+  /// `EnvironmentSwitcher` will be built on top of.
+  /// - `environments` - This is a list of `Environment` objects that will be
+  /// displayed in the switcher for the tester to choose from. This cannot be
+  /// empty.
+  /// - `defaultEnvironment` - This sets the environment to use when either
+  /// there is an issue with loading the saved environment, or when the banner
+  /// is not shown (`showBanner: false`).
+  /// - `environmentStore` - [Optional] This is preferences storage extension
+  /// that can be used. The default `EnvironmentStorage` object uses the
+  /// MyOxygen `Store` package to store the last used `Environment`.
+  /// - `showBanner` - [Optional] This simply hides the banner from view. The
+  /// idea is that on a Production release, developers can simply toggle this
+  /// flag to disable the switcher. Default: `true`.
   EnvironmentSwitcher({
     @required this.childBuilder,
     @required this.environments,
     EnvironmentStore environmentStore, // mainly required for testing
     this.showBanner = true,
-    this.defaultEnvironment,
+    @required this.defaultEnvironment,
     this.selectionTitle = _title,
     this.selectionDescription = _description,
   })  : assert(childBuilder != null),
         assert(environments != null && environments.length != 0),
         assert(showBanner != null),
-        assert(showBanner ? defaultEnvironment != null : true,
-            "The EnvironmentSwitcher needs a default environment if the banner is showing."),
+        assert(defaultEnvironment != null),
         assert(selectionTitle != null && selectionTitle.trim().isNotEmpty),
         assert(selectionDescription != null && selectionDescription.trim().isNotEmpty),
         _environmentStore = environmentStore ?? EnvironmentStore(store: Store());
 
   @override
   State<StatefulWidget> createState() {
-    return _StateEnvironmentSwitcher();
+    return _StateEnvironmentSwitcher<T>();
   }
 
-  static _EnvironmentSwitcher of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_EnvironmentSwitcher>();
+  static InheritedEnvironmentSwitcher<T> of<T extends EnvironmentData>(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InheritedEnvironmentSwitcher<T>>();
   }
 }
 
-class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
-  Environment currentEnvironment;
+class _StateEnvironmentSwitcher<T extends EnvironmentData> extends State<EnvironmentSwitcher<T>> {
+  Environment<T> currentEnvironment;
 
-  Environment get firstEnvironmentOrDefault {
+  Environment<T> get firstEnvironmentOrDefault {
     if ((widget.environments ?? []).isNotEmpty) {
       return widget.environments[0];
     } else {
       return widget.defaultEnvironment;
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.showBanner == false) {
-      currentEnvironment = widget.defaultEnvironment;
     }
   }
 
@@ -94,38 +99,39 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
     // previously saved environment
     // Note: Adding "== false" also acts as a null-check.
     if (widget.showBanner == false) {
-      return widget.childBuilder?.call(context);
+      return InheritedEnvironmentSwitcher<T>(
+        currentEnvironment: widget.defaultEnvironment,
+        child: Builder(builder: widget.childBuilder),
+      );
     }
 
     if (currentEnvironment == null) {
       // On first run, we need to load the saved environment (if any). If none
       // are saved, use the first in the list. If the list is empty, use the
       // default.
-      return FutureBuilder<Environment>(
+      return FutureBuilder<Environment<T>>(
         future: _getSavedEnvironmentOrDefault(),
         builder: (context, snapshot) {
           currentEnvironment = snapshot.data ?? firstEnvironmentOrDefault;
-          return _buildBanner(context, currentEnvironment);
+          return _buildBanner(currentEnvironment);
         },
       );
     } else {
-      return _buildBanner(context, currentEnvironment);
+      return _buildBanner(currentEnvironment);
     }
   }
 
-  Widget _buildBanner(BuildContext context, Environment environment) {
-    return _EnvironmentSwitcher(
+  Widget _buildBanner(Environment<T> environment) {
+    return InheritedEnvironmentSwitcher<T>(
       currentEnvironment: environment,
-      child: _Banner(
-        child: Builder(
-          builder: (context) => widget.childBuilder?.call(context),
-        ),
+      child: LocalBanner<T>(
         onBannerTapped: _onBannerTapped,
+        childBuilder: widget.childBuilder,
       ),
     );
   }
 
-  Future<Environment> _getSavedEnvironmentOrDefault() async {
+  Future<Environment<T>> _getSavedEnvironmentOrDefault() async {
     final savedEnvironmentName = await widget._environmentStore.getSavedEnvironment();
     if (savedEnvironmentName == null) {
       print("No environment saved");
@@ -143,17 +149,19 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
   void _onBannerTapped(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => SelectEnvironmentSheet(
-        environments: widget.environments,
+      builder: (_) => InheritedEnvironmentSwitcher<T>(
         currentEnvironment: currentEnvironment,
-        onNewEnvironmentSelected: _onNewEvironmentTapped,
-        title: widget.selectionTitle,
-        description: widget.selectionDescription,
+        child: SelectEnvironmentSheet(
+          environments: widget.environments,
+          onNewEnvironmentSelected: _onNewEvironmentTapped,
+          title: widget.selectionTitle,
+          description: widget.selectionDescription,
+        ),
       ),
     );
   }
 
-  Future<void> _onNewEvironmentTapped(Environment newEnvironment) async {
+  Future<void> _onNewEvironmentTapped(Environment<T> newEnvironment) async {
     try {
       await widget._environmentStore.saveEnvironment(newEnvironment);
       setState(() {
@@ -165,30 +173,31 @@ class _StateEnvironmentSwitcher extends State<EnvironmentSwitcher> {
   }
 }
 
-class _Banner extends StatelessWidget {
-  final Widget child;
+class LocalBanner<T extends EnvironmentData> extends StatelessWidget {
+  final Widget Function(BuildContext) childBuilder;
   final void Function(BuildContext) onBannerTapped;
 
-  const _Banner({
-    @required this.child,
+  const LocalBanner({
+    this.childBuilder,
     @required this.onBannerTapped,
-  })  : assert(child != null),
+  })  : assert(childBuilder != null),
         assert(onBannerTapped != null);
 
   @override
   Widget build(BuildContext context) {
-    final environment = EnvironmentSwitcher.of(context)?.currentEnvironment;
+    final environment = EnvironmentSwitcher.of<T>(context)?.currentEnvironment;
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: (environment == null || !environment.isNameValid)
-          ? child
+          ? Builder(builder: childBuilder)
           : Stack(
               children: <Widget>[
                 Banner(
                   message: environment.name,
                   location: BannerLocation.topEnd,
                   color: environment.bannerColor,
-                  child: child,
+                  child: Builder(builder: childBuilder),
                 ),
                 _BannerHitBox(onTap: onBannerTapped),
               ],

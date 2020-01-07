@@ -24,20 +24,17 @@ final environments = [
 
 Widget _app() {
   return MaterialApp(
-    home: Builder(
-      builder: (context) => EnvironmentSwitcher(
-        environments: environments,
-        environmentStore: _MockEnvironmentStore(),
-        defaultEnvironment: environments[0],
-        childBuilder: (_, env) => Material(
-          child: Scaffold(
-            body: Center(
-              child: Container(
-                width: 100,
-                height: 100,
-                color: Colors.black,
-              ),
-            ),
+    home: EnvironmentSwitcher(
+      environments: environments,
+      environmentStore: _MockEnvironmentStore(),
+      defaultEnvironment: environments[0],
+      childBuilder: (context) => Scaffold(
+        body: Center(
+          child: Container(
+            width: 100,
+            height: 100,
+            //color: Colors.black,
+            child: Text(EnvironmentSwitcher.of(context).currentEnvironment.name + "S"),
           ),
         ),
       ),
@@ -117,6 +114,8 @@ void main() {
 
     // Find the new banner
     await _findBanner(tester, environment: environments[2]);
+    expect(find.text(environments[2].name + "S"), findsOneWidget,
+        reason: "The third environment should be available on screen.");
   });
 }
 
