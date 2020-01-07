@@ -17,6 +17,7 @@ LATEST_COMMIT=$(git rev-parse HEAD)
 declare -a libraries=(
     "database_provider"
     "do_on_build"
+    "environment_switcher"
     "infinite_scroll_view"
     "media_downloader"
     "quickdialogs"
