@@ -24,13 +24,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Builder(
-        builder: (_) => EnvironmentSwitcher(
-          environments: environments,
-          defaultEnvironment: environments[0],
-          childBuilder: (__) => MyHomePage(title: 'Flutter Demo Home Page'),
-        ),
-      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
