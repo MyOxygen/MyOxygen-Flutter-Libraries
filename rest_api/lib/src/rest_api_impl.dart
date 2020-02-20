@@ -256,6 +256,7 @@ class RestApi {
       statusCode: response.statusCode,
       body: responseBody,
       headers: headers,
+      rawResponse: response,
     );
 
     /// call the subclass listener

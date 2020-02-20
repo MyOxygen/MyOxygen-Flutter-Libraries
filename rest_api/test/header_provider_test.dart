@@ -1,5 +1,5 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:rest_api/src/rest_header_provider.dart';
-import 'package:test_api/test_api.dart';
 
 class _TestHeaderProvider extends HeaderProvider {
   final Header header;
