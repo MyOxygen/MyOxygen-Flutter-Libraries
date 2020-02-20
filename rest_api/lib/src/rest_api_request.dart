@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import '../rest_api.dart';
 
+enum RestRequestType { post, get, put, delete }
+
 class RestApiRequest {
   final RestRequestType requestType;
   final String endpoint;

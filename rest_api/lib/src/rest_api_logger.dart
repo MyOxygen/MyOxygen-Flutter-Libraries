@@ -1,11 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:rest_api/src/rest_api_impl.dart';
 
-import 'rest_api_impl.dart';
-import 'json_object.dart';
-
-export 'json_object.dart';
+import '../rest_api.dart';
 
 class RestApiLogger {
   /// Log the networking stuff. Keeps the logging code out of the

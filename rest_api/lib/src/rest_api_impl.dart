@@ -20,8 +20,6 @@ export 'rest_response.dart';
 
 const _timeout = Duration(seconds: 30);
 
-enum RestRequestType { post, get, put, delete }
-
 /// Provides generic POST, GET, PUT, and DELETE Rest requests. The class should
 /// be used to facilitate API calls to any server.
 class RestApi {
@@ -199,7 +197,7 @@ class RestApi {
     final interceptorsForThisRequest = interceptors ?? this.defaultInterceptors;
 
     for (final interceptor in interceptorsForThisRequest) {
-      response = await interceptor.interceptAfterResponse(this, response);
+      response = await interceptor.interceptAfterResponse(this, _client, response);
     }
 
     return _createRestResponse(response);
