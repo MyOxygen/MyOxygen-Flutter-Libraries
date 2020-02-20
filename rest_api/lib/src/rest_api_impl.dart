@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
+import 'package:rest_api/src/rest_api_interceptor.dart';
 
 import 'json_object.dart';
 import 'rest_api_errors.dart';
@@ -29,6 +30,7 @@ class RestApi {
   final List<HeaderProvider> defaultHeaderProviders;
   final Client clientOverride;
   final Duration timeout;
+  final List<RestApiInterceptor> defaultInterceptors;
 
   /// [baseUrl] is the endpoint we're pointing at. It will be prepended to all requests.
   /// [defaultHeaderProviders] intercept the api calls, and will add any required headers.
@@ -36,12 +38,15 @@ class RestApi {
   /// [logger] is intercepts requests and logs them (nullable).
   /// [clientOverride] can be used to set a specific client. By default, it'll use a new client for each call.
   /// [timeout] is the duration the call will wait before giving out. Defaults to 30s
+  /// [defaultInterceptors] can be used to intercept the response. Each response can have custom interceptors
+  /// that override these interceptors.
   const RestApi({
     @required this.baseUrl,
     @required this.defaultHeaderProviders,
     this.logger = const RestApiLogger(),
     this.clientOverride,
     this.timeout = _timeout,
+    this.defaultInterceptors = const [],
   }) : assert(baseUrl != null);
 
   // create a new client, unless an override is provided.
@@ -57,6 +62,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
       RestRequestType.get,
@@ -64,6 +70,7 @@ class RestApi {
       jsonBody: jsonBody,
       queryParameters: queryParameters,
       headerProviders: headers ?? [],
+      interceptors: interceptors,
     );
   }
 
@@ -77,6 +84,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
       RestRequestType.post,
@@ -84,6 +92,7 @@ class RestApi {
       jsonBody: jsonBody,
       queryParameters: queryParameters,
       headerProviders: headers ?? [],
+      interceptors: interceptors,
     );
   }
 
@@ -97,6 +106,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
       RestRequestType.delete,
@@ -104,6 +114,7 @@ class RestApi {
       jsonBody: jsonBody,
       queryParameters: queryParameters,
       headerProviders: headers ?? [],
+      interceptors: interceptors,
     );
   }
 
@@ -117,6 +128,7 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
       RestRequestType.put,
@@ -124,6 +136,7 @@ class RestApi {
       jsonBody: jsonBody,
       queryParameters: queryParameters,
       headerProviders: headers,
+      interceptors: interceptors,
     );
   }
 
@@ -134,6 +147,7 @@ class RestApi {
     @required JsonObject jsonBody,
     @required Map<String, String> queryParameters,
     @required List<HeaderProvider> headerProviders,
+    @required List<RestApiInterceptor> interceptors,
   }) async {
     assert(endpoint != null);
     assert(endpoint != "");
@@ -181,6 +195,15 @@ class RestApi {
     }
 
     logger?.logResponse(response);
+
+    // use the interceptors for this requesst if supplied, or the
+    // ones from the constructor if not.
+    final interceptorsForThisResponse = interceptors ?? this.defaultInterceptors;
+
+    /// Apply all the interceptors in order.
+    for (final interceptor in interceptorsForThisResponse) {
+      response = await interceptor.interceptResponse(response, this);
+    }
 
     return _createRestResponse(response);
   }
