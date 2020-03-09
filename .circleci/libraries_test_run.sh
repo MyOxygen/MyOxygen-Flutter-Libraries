@@ -19,6 +19,7 @@ declare -a libraries=(
     "do_on_build"
     "infinite_scroll_view"
     "media_downloader"
+    "navigation_store"
     "quickdialogs"
     "store"
     "rest_api"
