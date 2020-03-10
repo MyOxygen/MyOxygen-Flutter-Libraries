@@ -112,6 +112,14 @@ class MyPage extends StatelessPage<MyPageConfiguration> {
 
 ...
 
+MaterialApp(
+    navigatorKey: NavigationService.navigatorKey,
+    onGenerateRoute: (settings) => NavigationService.getRoute(settings),
+    ...
+);
+
+...
+
 final pageConfiguration = MyPageConfiguration("My text");
 NavigationService.navigateTo(pageConfiguration);
 ```
