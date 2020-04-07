@@ -69,7 +69,7 @@ class RestApiLogger {
       return;
     }
 
-    debugPrint("<--- ${response.statusCode} ${response.request.url}");
+    debugPrint("<--- ${response.statusCode} ${response.request?.url}");
     if (response.headers != null) {
       response.headers.forEach((k, v) => debugPrint("<--- $k : $v"));
     }
