@@ -169,23 +169,23 @@ class RestApi {
     try {
       switch (request.requestType) {
         case RestRequestType.post:
-          response = await _client
-              .post(url, headers: headers, body: request.jsonBody?.jsonString)
-              .timeout(_timeout);
+          final future = _client.post(url, headers: headers, body: request.jsonBody?.jsonString);
+          response = await future.timeout(_timeout);
           break;
 
         case RestRequestType.get:
-          response = await _client.get(url, headers: headers).timeout(_timeout);
+          final future = _client.get(url, headers: headers);
+          response = await future.timeout(_timeout);
           break;
 
         case RestRequestType.put:
-          response = await _client
-              .put(url, headers: headers, body: request.jsonBody?.jsonString)
-              .timeout(_timeout);
+          final future = _client.put(url, headers: headers, body: request.jsonBody?.jsonString);
+          response = await future.timeout(_timeout);
           break;
 
         case RestRequestType.delete:
-          response = await _client.delete(url, headers: headers).timeout(_timeout);
+          final future = _client.delete(url, headers: headers);
+          response = await future.timeout(_timeout);
           break;
       }
     } on SocketException {
