@@ -4,6 +4,9 @@ import 'package:rest_api/src/rest_header_provider.dart';
 class _TestHeaderProvider extends HeaderProvider {
   final Header header;
 
+  @override
+  List<Object> get props => [header];
+
   _TestHeaderProvider(this.header);
 
   @override

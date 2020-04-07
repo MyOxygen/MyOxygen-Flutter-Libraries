@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 /// Provides a headers for a request. To be used with dynamic data that may
@@ -5,7 +6,7 @@ import 'package:meta/meta.dart';
 /// token: a [List<Header>] will retain the data staticly, whereas a
 /// [List<HeaderProvider>] allows developers to implement fetching the data from
 /// a local storage provider (or elsewhere).
-abstract class HeaderProvider {
+abstract class HeaderProvider extends Equatable {
   const HeaderProvider();
 
   /// Return a future containting the [Header] that you want to add to the call.
@@ -14,9 +15,12 @@ abstract class HeaderProvider {
 }
 
 /// Just a wrapper object containing our header.
-class Header {
+class Header extends Equatable {
   final String name;
   final String value;
+
+  @override
+  List<Object> get props => [name, value];
 
   Header({
     @required this.name,
@@ -27,15 +31,6 @@ class Header {
   @override
   String toString() {
     return "$name : $value";
-  }
-
-  bool operator ==(o) => o is Header && o.name == this.name && o.value == this.value;
-
-  int get hashCode {
-    int hash = 17; // prime number
-    hash = 31 * hash + name.hashCode;
-    hash = 31 * hash + value.hashCode;
-    return hash;
   }
 }
 
