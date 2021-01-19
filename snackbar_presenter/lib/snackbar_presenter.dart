@@ -11,11 +11,10 @@ class SnackBarPresenter {
   const SnackBarPresenter._();
 
   /// Present an information [SnackBar] in the provided [Scaffold].
-  static void presentInformation(GlobalKey<ScaffoldState> scaffoldKey, String message,
-      {Color iconColor}) {
+  static void presentInformation(ScaffoldState scaffoldState, String message, {Color iconColor}) {
     // If the `iconColor` is null, it will default to the icon theme data color.
     _presentSnackbar(
-      scaffoldKey,
+      scaffoldState,
       message,
       iconColor,
       FontAwesomeIcons.infoCircle,
@@ -23,10 +22,9 @@ class SnackBarPresenter {
   }
 
   /// Present a success [SnackBar] in the provided [Scaffold].
-  static void presentSuccess(GlobalKey<ScaffoldState> scaffoldKey, String message,
-      {Color iconColor}) {
+  static void presentSuccess(ScaffoldState scaffoldState, String message, {Color iconColor}) {
     _presentSnackbar(
-      scaffoldKey,
+      scaffoldState,
       message,
       iconColor ?? _successColor,
       FontAwesomeIcons.solidCheckCircle,
@@ -34,9 +32,9 @@ class SnackBarPresenter {
   }
 
   /// Present an error [SnackBar] in the provided [Scaffold].
-  static void presentError(GlobalKey<ScaffoldState> scaffoldKey, String error, {Color iconColor}) {
+  static void presentError(ScaffoldState scaffoldState, String error, {Color iconColor}) {
     _presentSnackbar(
-      scaffoldKey,
+      scaffoldState,
       error,
       iconColor ?? _errorColor,
       FontAwesomeIcons.exclamationCircle,
@@ -45,8 +43,8 @@ class SnackBarPresenter {
 
   /// Handles displaying the action [SnackBar] with its contents.
   static void _presentSnackbar(
-      GlobalKey<ScaffoldState> scaffoldKey, String message, Color color, IconData icon) {
-    assert(scaffoldKey != null);
+      ScaffoldState scaffoldState, String message, Color color, IconData icon) {
+    assert(scaffoldState != null);
     assert(message != null);
     assert(message.isNotEmpty);
 
@@ -68,8 +66,8 @@ class SnackBarPresenter {
 
     // Hide any currently showing SnackBars. If there are none, this will do
     // nothing.
-    scaffoldKey.currentState.hideCurrentSnackBar();
+    scaffoldState.hideCurrentSnackBar();
 
-    scaffoldKey.currentState.showSnackBar(snackbar);
+    scaffoldState.showSnackBar(snackbar);
   }
 }

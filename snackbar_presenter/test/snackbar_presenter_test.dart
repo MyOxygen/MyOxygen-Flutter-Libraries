@@ -64,24 +64,26 @@ void main() {
   }
 
   testWidgets("Information SnackBar shows", (WidgetTester tester) async {
-    final createSnackBar = (key) =>
-        SnackBarPresenter.presentInformation(key, _informationMessage, iconColor: _customColor);
+    final createSnackBar = (GlobalKey<ScaffoldState> key) => SnackBarPresenter.presentInformation(
+        key.currentState, _informationMessage,
+        iconColor: _customColor);
     await _createAppPresentSnackBar(tester, createSnackBar);
 
     _testForSnackBarContent(_informationMessage, FontAwesomeIcons.infoCircle);
   });
 
   testWidgets("Success SnackBar shows", (WidgetTester tester) async {
-    final createSnackBar =
-        (key) => SnackBarPresenter.presentSuccess(key, _successMessage, iconColor: _customColor);
+    final createSnackBar = (GlobalKey<ScaffoldState> key) => SnackBarPresenter.presentSuccess(
+        key.currentState, _successMessage,
+        iconColor: _customColor);
     await _createAppPresentSnackBar(tester, createSnackBar);
 
     _testForSnackBarContent(_successMessage, FontAwesomeIcons.solidCheckCircle);
   });
 
   testWidgets("Error SnackBar shows", (WidgetTester tester) async {
-    final createSnackBar =
-        (key) => SnackBarPresenter.presentError(key, _errorMessage, iconColor: _customColor);
+    final createSnackBar = (GlobalKey<ScaffoldState> key) =>
+        SnackBarPresenter.presentError(key.currentState, _errorMessage, iconColor: _customColor);
     await _createAppPresentSnackBar(tester, createSnackBar);
 
     _testForSnackBarContent(_errorMessage, FontAwesomeIcons.exclamationCircle);
@@ -89,11 +91,11 @@ void main() {
 
   testWidgets("Hide currently showing SnackBar", (WidgetTester tester) async {
     int tapCount = 0;
-    final buttonHandler = (key) {
+    final buttonHandler = (GlobalKey<ScaffoldState> key) {
       if (tapCount % 2 == 0) {
-        SnackBarPresenter.presentInformation(key, _informationMessage);
+        SnackBarPresenter.presentInformation(key.currentState, _informationMessage);
       } else {
-        SnackBarPresenter.presentSuccess(key, _successMessage);
+        SnackBarPresenter.presentSuccess(key.currentState, _successMessage);
       }
       tapCount++;
     };

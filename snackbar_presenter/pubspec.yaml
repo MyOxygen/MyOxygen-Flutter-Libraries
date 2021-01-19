@@ -1,6 +1,6 @@
 name: snackbar_presenter
 description: A new Flutter package project.
-version: 0.0.1
+version: 0.0.2
 author:
 homepage:
 
@@ -11,7 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  font_awesome_flutter: ^8.5.0
+  equatable: ^1.2.5
+  font_awesome_flutter: ^8.11.0
 
 
 dev_dependencies:
