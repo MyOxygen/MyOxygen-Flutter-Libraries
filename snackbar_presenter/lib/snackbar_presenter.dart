@@ -15,7 +15,7 @@ class SnackBarPresenter {
       {Color iconColor}) {
     // If the `iconColor` is null, it will default to the icon theme data color.
     _presentSnackbar(
-      scaffoldKey,
+      scaffoldKey.currentState,
       message,
       iconColor,
       FontAwesomeIcons.infoCircle,
@@ -26,7 +26,7 @@ class SnackBarPresenter {
   static void presentSuccess(GlobalKey<ScaffoldState> scaffoldKey, String message,
       {Color iconColor}) {
     _presentSnackbar(
-      scaffoldKey,
+      scaffoldKey.currentState,
       message,
       iconColor ?? _successColor,
       FontAwesomeIcons.solidCheckCircle,
@@ -36,7 +36,7 @@ class SnackBarPresenter {
   /// Present an error [SnackBar] in the provided [Scaffold].
   static void presentError(GlobalKey<ScaffoldState> scaffoldKey, String error, {Color iconColor}) {
     _presentSnackbar(
-      scaffoldKey,
+      scaffoldKey.currentState,
       error,
       iconColor ?? _errorColor,
       FontAwesomeIcons.exclamationCircle,
@@ -45,8 +45,8 @@ class SnackBarPresenter {
 
   /// Handles displaying the action [SnackBar] with its contents.
   static void _presentSnackbar(
-      GlobalKey<ScaffoldState> scaffoldKey, String message, Color color, IconData icon) {
-    assert(scaffoldKey != null);
+      ScaffoldState scaffoldState, String message, Color color, IconData icon) {
+    assert(scaffoldState != null);
     assert(message != null);
     assert(message.isNotEmpty);
 
@@ -68,8 +68,8 @@ class SnackBarPresenter {
 
     // Hide any currently showing SnackBars. If there are none, this will do
     // nothing.
-    scaffoldKey.currentState.hideCurrentSnackBar();
+    scaffoldState.hideCurrentSnackBar();
 
-    scaffoldKey.currentState.showSnackBar(snackbar);
+    scaffoldState.showSnackBar(snackbar);
   }
 }
