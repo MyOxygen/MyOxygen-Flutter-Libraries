@@ -13,7 +13,6 @@ dependencies:
     sdk: flutter
 
   fimber_io: ^0.4.4
-  flutter_html: ^1.2.0
   google_fonts: ^1.1.2
   intl: ^0.16.1
   path_provider: ^1.6.27

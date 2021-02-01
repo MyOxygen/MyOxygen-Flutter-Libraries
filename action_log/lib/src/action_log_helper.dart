@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
-class ActionLogConstants {
+class ActionLogHelper {
   static const _logDirectory = "logs";
 
   static Future<String> getLogFilePath() async {
