@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:action_log/action_log.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await ActionLog.initialise(isPublicRelease: false);
+
   runApp(MyApp());
 }
 
@@ -14,45 +16,51 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await ActionLog.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
+  int counter = 0;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('ActionLog - Demonstration'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _onFabPressed,
+          child: Icon(Icons.plus_one),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: Text(
+                  'Counter: $counter',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: Builder(
+                  builder: (context) => RaisedButton(
+                    child: Text("View logs"),
+                    onPressed: () => ActionLog.navigateToLogsListView(context),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  void _onFabPressed() {
+    final lastValue = counter;
+    setState(() {
+      counter += 1;
+      ActionLog.i("Incremented counter from $lastValue to $counter.");
+    });
   }
 }
