@@ -8,14 +8,10 @@ import 'action_log_helper.dart';
 import 'internal/error_display.dart';
 import 'log_file_viewer.dart';
 
-class LogsListViewer extends StatefulWidget {
+/// Simple list view of the log files saved.
+class LogsListViewer extends StatelessWidget {
   const LogsListViewer();
 
-  @override
-  _LogsListViewerState createState() => _LogsListViewerState();
-}
-
-class _LogsListViewerState extends State<LogsListViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
