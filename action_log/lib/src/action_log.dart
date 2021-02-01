@@ -4,9 +4,8 @@ import 'package:fimber_io/fimber_io.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
-const _logDirectory = "logs";
+import 'action_log_helper.dart';
 
 class ActionLog {
   static String _filePath;
@@ -36,21 +35,7 @@ class ActionLog {
     // creating a directory could go wrong.
     Fimber.plantTree(DebugTree(useColors: true));
 
-    final localDirectory = await getApplicationDocumentsDirectory();
-    if (localDirectory == null) {
-      e("Application directory was NULL");
-      return;
-    }
-
-    Directory logsDirectory;
-    try {
-      logsDirectory = await Directory("${localDirectory.path}/$_logDirectory").create();
-    } catch (e) {
-      e("Failed to create logs directory\n$e");
-      return;
-    }
-
-    _filePath = logsDirectory.path;
+    _filePath = await ActionLogHelper.getLogFilePath();
 
     // Create a new file on every initialisation with the date/time (unix
     // format) as the file name. This helps determine when the app was
