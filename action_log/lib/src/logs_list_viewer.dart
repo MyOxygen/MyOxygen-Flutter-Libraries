@@ -9,14 +9,25 @@ import 'internal/error_display.dart';
 import 'log_file_viewer.dart';
 
 /// Simple list view of the log files saved.
-class LogsListViewer extends StatelessWidget {
+class LogsListViewer extends StatefulWidget {
   const LogsListViewer();
+
+  @override
+  State<StatefulWidget> createState() {
+    return _LogsListViewerState();
+  }
+}
+
+class _LogsListViewerState extends State<LogsListViewer> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Logs List"),
+        centerTitle: true,
       ),
       body: FutureBuilder<List<FileSystemEntity>>(
         future: ActionLogHelper.getListOfLogs(),
@@ -42,15 +53,27 @@ class LogsListViewer extends StatelessWidget {
                       Icons.arrow_forward_ios,
                       color: Colors.blue[300],
                     ),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => LogFileViewer(
-                          title: formattedString,
-                          fileSystemEntity: fileList[index],
+                    onTap: () async {
+                      final fileDeleted = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => LogFileViewer(
+                            title: formattedString,
+                            fileSystemEntity: fileList[index],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+
+                      if (fileDeleted) {
+                        // We need to reload the page to stop displaying the
+                        // non-existing file.
+                        setState(() {});
+                        ActionLogHelper.displaySnackBar(
+                          _scaffoldKey.currentState,
+                          "Log file delete successfully.",
+                        );
+                      }
+                    },
                   );
                 },
               );

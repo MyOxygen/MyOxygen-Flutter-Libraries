@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ActionLogHelper {
@@ -35,5 +36,20 @@ class ActionLogHelper {
 
       return listOfFiles;
     });
+  }
+
+  static void displaySnackBar(final ScaffoldState scaffoldState, final String message,
+      {final Widget withAction}) {
+    scaffoldState.hideCurrentSnackBar();
+
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          Expanded(child: Text(message)),
+          withAction ?? const SizedBox(),
+        ],
+      ),
+    );
+    scaffoldState.showSnackBar(snackBar);
   }
 }
