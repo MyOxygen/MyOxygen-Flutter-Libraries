@@ -38,7 +38,10 @@ class LogsListViewer extends StatelessWidget {
                   }
                   return ListTile(
                     title: Text(formattedString),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.blue[300],
+                    ),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
