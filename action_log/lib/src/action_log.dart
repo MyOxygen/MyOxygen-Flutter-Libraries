@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 
 import 'action_log_helper.dart';
+import 'logs_list_viewer.dart';
 
 class ActionLog {
   static String _filePath;
@@ -158,5 +159,14 @@ class ActionLog {
     } catch (e) {
       logFileMap["$baseName-DELETE"] = "Failed to delete log file\n$e";
     }
+  }
+
+  static void navigateToLogsListView(final BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LogsListViewer(),
+      ),
+    );
   }
 }
