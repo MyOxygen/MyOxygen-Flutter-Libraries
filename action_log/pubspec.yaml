@@ -12,6 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  path_provider: ^1.6.27
+  fimber_io: ^0.4.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
