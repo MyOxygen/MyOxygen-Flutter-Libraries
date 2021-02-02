@@ -26,6 +26,7 @@ class ActionLog {
   /// logging to a file.
   static Future<void> initialise({
     @required bool isPublicRelease,
+    String logFolderName,
     String fileName,
   }) async {
     assert(isPublicRelease != null);
@@ -39,7 +40,7 @@ class ActionLog {
     // creating a directory could go wrong.
     Fimber.plantTree(DebugTree(useColors: true));
 
-    _filePath = await ActionLogHelper.getLogFilePath();
+    _filePath = await ActionLogHelper().getLogFilePath(logFolderName);
 
     // Create a new file on every initialisation with the date/time (unix
     // format) as the file name. This helps determine when the app was

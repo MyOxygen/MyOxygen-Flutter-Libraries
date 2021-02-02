@@ -1,22 +1,36 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+
+import 'internal/file_handler.dart';
 
 class ActionLogHelper {
   static const _logDirectory = "logs";
+  static String _actualLogDirectory;
+
+  final FileHandler _fileHandler;
+
+  ActionLogHelper([FileHandler fileHandler]) : _fileHandler = fileHandler ?? FileHandler();
 
   /// Retrieves the app's directory where the logs will be stored. Returns the
   /// directory path as a [String].
-  static Future<String> getLogFilePath() async {
-    final localDirectory = await getApplicationDocumentsDirectory();
+  Future<String> getLogFilePath(final String logDirectory) async {
+    final localDirectory = await _fileHandler.getCurrentDirectory();
     if (localDirectory == null) {
       throw "Application directory was NULL";
     }
 
+    _actualLogDirectory = logDirectory;
+    if (_actualLogDirectory == null) {
+      _actualLogDirectory = _logDirectory;
+    }
+
+    final directoryPath =
+        "${localDirectory.path}${_actualLogDirectory.trim().isEmpty ? "" : "/$_actualLogDirectory"}";
+
     Directory logsDirectory;
     try {
-      logsDirectory = await Directory("${localDirectory.path}/$_logDirectory").create();
+      logsDirectory = await Directory(directoryPath).create();
     } catch (e) {
       throw "Failed to create logs directory\n$e";
     }
@@ -26,15 +40,16 @@ class ActionLogHelper {
 
   /// Retrieves the list of files from the logs directory. The returned list is
   /// a list of [FileSystemEntity] objects. These objects should contain all the
-  /// necessary information for each file.
-  static Future<List<FileSystemEntity>> getListOfLogs() {
-    return getLogFilePath().then((filePath) {
+  /// necessary information for each file. Note that any folders in the
+  /// directory will *not* be returned.
+  Future<List<FileSystemEntity>> getListOfLogs([final String logDirectory]) {
+    return getLogFilePath(logDirectory ?? _actualLogDirectory).then((filePath) {
       final listOfFiles = Directory(filePath).listSync();
       if (listOfFiles == null) {
         return <FileSystemEntity>[];
       }
 
-      return listOfFiles;
+      return listOfFiles.where((element) => element is File).toList();
     });
   }
 

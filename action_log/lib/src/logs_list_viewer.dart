@@ -26,7 +26,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<FileSystemEntity>>(
-      future: ActionLogHelper.getListOfLogs(),
+      future: ActionLogHelper().getListOfLogs(),
       builder: (context, snapshot) {
         Widget body;
 
