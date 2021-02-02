@@ -64,7 +64,10 @@ class _LogsListViewerState extends State<LogsListViewer> {
                       ),
                     );
 
-                    if (fileDeleted) {
+                    // `fileDeleted` could be null when the user presses the
+                    // back button. We only want to delete if the user actually
+                    // presses the delete button.
+                    if (fileDeleted == true) {
                       // We need to reload the page to stop displaying the
                       // non-existing file.
                       setState(() {});
