@@ -1,6 +1,7 @@
 import 'package:fimber_io/fimber_io.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:synchronized/synchronized.dart';
 
 import 'action_log_helper.dart';
 import 'logs_list_viewer.dart';
@@ -8,6 +9,12 @@ import 'logs_list_viewer.dart';
 class ActionLog {
   static String _filePath;
   static String _lastFileName;
+
+  // Use a [Lock] to ensure that only one statements is written into the log
+  // file at a time. This ensures that if the app sends two logs at the same
+  // time, they are added into the log file one after the other. See link:
+  // https://pub.dev/packages/synchronized#example
+  static Lock _lock = Lock();
 
   /// Initialises the `ActionLog` class to be used throughout the code. Without
   /// this initialisation, no logging of any kind will occur. `isPublicRelease`
@@ -51,28 +58,29 @@ class ActionLog {
             "${CustomFormatTree.levelToken}\t"
             "${CustomFormatTree.messageToken}\t"
             "${CustomFormatTree.exceptionMsgToken}"));
-    i("Logging initialised");
 
+    i("Logging initialised");
   }
 
   /// Writes an "information" level message to the logs. This is denoted by the
   /// letter "I" in the logs.
   static void i(String message, {dynamic ex}) {
-    Fimber.i(message, ex: ex);
+    _lock.synchronized(() => Fimber.i(message, ex: ex));
   }
 
   /// Writes an "error" level message to the logs. This is denoted by the letter
   /// "E" in the logs.
   static void e(String message, {dynamic ex}) {
-    Fimber.e(message, ex: ex);
+    _lock.synchronized(() => Fimber.e(message, ex: ex));
   }
 
   /// Writes a "warning" level message to the logs. This is denoted by the
   /// letter "W" in the logs.
   static void w(String message, {dynamic ex}) {
-    Fimber.w(message, ex: ex);
+    _lock.synchronized(() => Fimber.w(message, ex: ex));
   }
 
+  // Automatically navigates to the list of logs.
   static void navigateToLogsListView(final BuildContext context) {
     Navigator.push(
       context,
