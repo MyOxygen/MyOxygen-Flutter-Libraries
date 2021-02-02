@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'action_log_helper.dart';
+import 'internal/file_handler.dart';
 import 'logs_list_viewer.dart';
 
 class ActionLog {
@@ -28,6 +29,7 @@ class ActionLog {
     @required bool isPublicRelease,
     String logFolderName,
     String fileName,
+    FileHandler fileHandler, // For testing
   }) async {
     assert(isPublicRelease != null);
 
@@ -39,8 +41,9 @@ class ActionLog {
     // Enable console logging before all else, which will allow devs to see why
     // creating a directory could go wrong.
     Fimber.plantTree(DebugTree(useColors: true));
+    ActionLogHelper.setFileHandler(fileHandler);
 
-    _filePath = await ActionLogHelper().getLogFilePath(logFolderName);
+    _filePath = await ActionLogHelper.getLogFilePath(logFolderName);
 
     // Create a new file on every initialisation with the date/time (unix
     // format) as the file name. This helps determine when the app was

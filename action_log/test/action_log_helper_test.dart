@@ -17,6 +17,7 @@ void main() {
     fileHandler = MockFileHandler();
     when(fileHandler.getCurrentDirectory())
         .thenAnswer((_) async => Directory(dynamicDirectoryPath));
+    ActionLogHelper.setFileHandler(fileHandler);
   });
 
   // Tests
@@ -25,7 +26,7 @@ void main() {
   // - Ensure writing to log file
 
   Future<List<FileSystemEntity>> _getLogFiles() async {
-    final logFiles = await ActionLogHelper(fileHandler).getListOfLogs("");
+    final logFiles = await ActionLogHelper.getListOfLogs("");
     expect(logFiles, isNotNull);
     expect(logFiles, isNotEmpty);
     expect(logFiles.length, 1);
@@ -33,7 +34,7 @@ void main() {
   }
 
   test("Logs directory is correct.", () async {
-    final logFilePath = await ActionLogHelper(fileHandler).getLogFilePath("");
+    final logFilePath = await ActionLogHelper.getLogFilePath("");
     expect(logFilePath, dynamicDirectoryPath);
   });
 
