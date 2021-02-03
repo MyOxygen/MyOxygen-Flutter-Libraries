@@ -44,9 +44,6 @@ class _LogsListViewerState extends State<LogsListViewer> {
               itemBuilder: (BuildContext context, int index) {
                 final fileName = basenameWithoutExtension(listOfFiles[index].path);
                 final formattedString = _formatFileName(fileName);
-                if (formattedString == null) {
-                  return const SizedBox();
-                }
                 return ListTile(
                   title: Text(formattedString),
                   trailing: Icon(
@@ -105,7 +102,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
   String _formatFileName(final String fileName) {
     final timeStamp = int.tryParse(fileName);
     if (timeStamp == null) {
-      return null;
+      return fileName;
     }
 
     final dateTime = DateTime.fromMicrosecondsSinceEpoch(timeStamp * 1000);
