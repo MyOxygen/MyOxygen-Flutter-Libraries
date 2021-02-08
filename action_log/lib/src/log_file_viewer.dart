@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'action_log_helper.dart';
@@ -97,7 +98,7 @@ class _LogFileViewerState extends State<LogFileViewer> {
 
   Future<void> _onCopyPressed() {
     return _doAction(
-      widget.fileSystemEntity.delete(),
+      _getFileContents().then((value) => Clipboard.setData(ClipboardData(text: value))),
       "Log contents copied successfully.",
       "Failed to copy log contents.",
     );
