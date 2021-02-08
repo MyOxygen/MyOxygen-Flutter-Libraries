@@ -14,7 +14,7 @@ action_log:
     ref: ActionLog-v0.0.1 # Use the latest ActionLog tag!!
 ```
 
-### SnackBarPresenter's APIs
+### ActionLog's APIs
 
 - `ActionLog.initialise`
   - Initialises `ActionLog` and prepares the necessary log files and configurations for logging entries. If this is specified that it is a production release (`isPublicRelease: true`), nothing is set up and nothing is logged, thus not affecting performance on the production release.

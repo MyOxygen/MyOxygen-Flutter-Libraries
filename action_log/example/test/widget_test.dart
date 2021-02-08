@@ -11,15 +11,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:action_log_example/main.dart';
 
 void main() {
-  testWidgets('Verify Platform version', (WidgetTester tester) async {
+  testWidgets('The necessary widgets are being displayed', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(MyApp());
 
-    // Verify that platform version is retrieved.
+    // Verify that counter value is displayed.
     expect(
       find.byWidgetPredicate(
-        (Widget widget) => widget is Text &&
-                           widget.data.startsWith('Running on:'),
+        (Widget widget) => widget is Text && widget.data.startsWith('Counter:'),
+      ),
+      findsOneWidget,
+    );
+
+    // Verify that the button to view logs is displayed.
+    expect(
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is RaisedButton &&
+            widget.child is Text &&
+            (widget.child as Text).data.toLowerCase().startsWith('view logs'),
       ),
       findsOneWidget,
     );
