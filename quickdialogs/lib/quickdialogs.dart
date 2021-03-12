@@ -42,19 +42,17 @@ class QuickDialogs {
             title: title,
             content: message,
             actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  constructiveActionName.toUpperCase(),
-                  style: const TextStyle(color: Colors.blue),
-                ),
+              TextButton(
+                child: Text(constructiveActionName.toUpperCase()),
+                style: TextButton.styleFrom(primary: Colors.blue),
                 onPressed: () {
                   // Close the dialog.
                   Navigator.of(context).pop();
                 },
               ),
-              FlatButton(
-                child: Text(destructiveActionName?.toUpperCase() ?? "",
-                    style: const TextStyle(color: Colors.red)),
+              TextButton(
+                child: Text(destructiveActionName?.toUpperCase() ?? ""),
+                style: TextButton.styleFrom(primary: Colors.red),
                 onPressed: () {
                   // Close the dialog.
                   Navigator.of(context).pop();
@@ -221,7 +219,7 @@ class _PlatformDialogButton extends StatelessWidget {
   }
 
   Widget _createMaterialAction(Widget textWidget, Function onPressed) {
-    return FlatButton(
+    return TextButton(
       child: textWidget,
       onPressed: onPressed,
     );
