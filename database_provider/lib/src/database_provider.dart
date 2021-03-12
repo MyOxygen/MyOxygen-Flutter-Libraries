@@ -263,7 +263,7 @@ abstract class DatabaseProvider<T extends DatabaseItem> {
     } catch (e) {
       throw DatabaseErrorParser.parseException(e);
     }
-    final list = List<DatabaseItem>();
+    final list = <DatabaseItem>[];
     results?.forEach((t) => list.add(converter(t)));
     return list.cast<T>();
   }
