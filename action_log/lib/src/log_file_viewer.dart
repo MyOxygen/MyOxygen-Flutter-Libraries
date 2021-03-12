@@ -15,9 +15,7 @@ class LogFileViewer extends StatefulWidget {
 
   /// This widget displays the contents of the log file as if it were on the
   /// console (horizontal and vertical scrolling, mon-spaced font).
-  const LogFileViewer({@required this.title, @required this.fileSystemEntity})
-      : assert(title != null),
-        assert(fileSystemEntity != null);
+  const LogFileViewer({required this.title, required this.fileSystemEntity});
 
   @override
   _LogFileViewerState createState() => _LogFileViewerState();
@@ -35,7 +33,7 @@ class _LogFileViewerState extends State<LogFileViewer> {
         fileContents = snapshot.data ?? "";
 
         if (snapshot.hasError) {
-          body = ErrorDisplay(snapshot.error);
+          body = ErrorDisplay(snapshot.error as String);
         } else if (!snapshot.hasData) {
           body = Center(child: CircularProgressIndicator());
         } else {
@@ -57,7 +55,7 @@ class _LogFileViewerState extends State<LogFileViewer> {
             title: Text(widget.title),
             actions: [
               // Only display the copy icon if there is text to copy.
-              if (fileContents != null && fileContents.trim().isNotEmpty)
+              if (fileContents.trim().isNotEmpty)
                 IconButton(
                   icon: Icon(Icons.copy),
                   onPressed: _onCopyPressed,

@@ -12,12 +12,12 @@ const dynamicDirectoryPath = "./test/resources/";
 const buttonText = "Display logs";
 const logFileName = "1612182198635";
 const logFileNameWithExtension = "1612182198635.txt";
-final logFileNameAsDateTime = DateTime.fromMillisecondsSinceEpoch(int.tryParse(logFileName));
+final logFileNameAsDateTime = DateTime.fromMillisecondsSinceEpoch(int.tryParse(logFileName)!);
 final logFileNameDisplayed = "01 Feb 2021 - 12:23:18";
 final mockObserver = MockNavigatorObserver();
 final key = GlobalKey<ScaffoldMessengerState>();
 
-FileHandler fileHandler;
+FileHandler? fileHandler;
 
 Future<void> _createApp(WidgetTester tester) async {
   final app = MaterialApp(
@@ -43,7 +43,7 @@ Future<void> _createApp(WidgetTester tester) async {
 void main() {
   setUpAll(() {
     fileHandler = MockFileHandler();
-    when(fileHandler.getCurrentDirectory())
+    when(fileHandler!.getCurrentDirectory())
         .thenAnswer((_) async => Directory(dynamicDirectoryPath));
 
     ActionLog.initialise(

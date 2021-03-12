@@ -19,7 +19,7 @@ class LogsListViewer extends StatefulWidget {
 }
 
 class _LogsListViewerState extends State<LogsListViewer> {
-  List<FileSystemEntity> listOfFiles;
+  List<FileSystemEntity>? listOfFiles;
 
   @override
   Widget build(BuildContext context) {
@@ -29,18 +29,18 @@ class _LogsListViewerState extends State<LogsListViewer> {
         Widget body;
 
         if (snapshot.hasError) {
-          body = ErrorDisplay(snapshot.error);
+          body = ErrorDisplay(snapshot.error as String);
         } else if (!snapshot.hasData) {
           body = Center(child: CircularProgressIndicator());
         } else {
           listOfFiles = snapshot.data;
-          if (listOfFiles.isEmpty) {
+          if (listOfFiles!.isEmpty) {
             body = Center(child: Text("No files to show."));
           } else {
             body = ListView.builder(
-              itemCount: listOfFiles.length,
+              itemCount: listOfFiles!.length,
               itemBuilder: (BuildContext context, int index) {
-                final fileName = basenameWithoutExtension(listOfFiles[index].path);
+                final fileName = basenameWithoutExtension(listOfFiles![index].path);
                 final formattedString = _formatFileName(fileName);
                 return ListTile(
                   title: Text(formattedString),
@@ -54,7 +54,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
                       MaterialPageRoute(
                         builder: (_) => LogFileViewer(
                           title: formattedString,
-                          fileSystemEntity: listOfFiles[index],
+                          fileSystemEntity: listOfFiles![index],
                         ),
                       ),
                     );
@@ -80,7 +80,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
               centerTitle: true,
               actions: [
                 // Delete this log file
-                if (listOfFiles != null && listOfFiles.isNotEmpty)
+                if (listOfFiles != null && listOfFiles!.isNotEmpty)
                   IconButton(
                     icon: Icon(Icons.delete_forever),
                     onPressed: _onDeletePressed,
@@ -110,7 +110,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
         style: TextButton.styleFrom(primary: Colors.red),
         onPressed: () async {
           String snackBarMessage = "Log files deleted.";
-          for (final file in listOfFiles) {
+          for (final file in listOfFiles!) {
             try {
               await file.delete();
             } catch (e) {

@@ -6,25 +6,27 @@ import 'internal/file_handler.dart';
 
 class ActionLogHelper {
   static const _logDirectory = "logs";
-  static String _actualLogDirectory;
-  static FileHandler _fileHandler;
-  static GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey;
+  static String? _actualLogDirectory;
+  static late FileHandler _fileHandler;
+  static late GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey;
 
   static void setScaffoldMessengerKey(
       final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) {
     _scaffoldMessengerKey = scaffoldMessengerKey;
   }
 
-  static void setFileHandler(final FileHandler fileHandler) {
+  static void setFileHandler(final FileHandler? fileHandler) {
     _fileHandler = fileHandler ?? FileHandler();
   }
 
   /// Retrieves the app's directory where the logs will be stored. Returns the
   /// directory path as a [String].
-  static Future<String> getLogFilePath(final String logDirectory) async {
-    final localDirectory = await _fileHandler.getCurrentDirectory();
-    if (localDirectory == null) {
-      throw "Application directory was NULL";
+  static Future<String> getLogFilePath(final String? logDirectory) async {
+    Directory localDirectory;
+    try {
+      localDirectory = await _fileHandler.getCurrentDirectory();
+    } catch (e) {
+      throw "Failed to get application documents directory\n$e";
     }
 
     _actualLogDirectory = logDirectory;
@@ -33,7 +35,7 @@ class ActionLogHelper {
     }
 
     final directoryPath =
-        "${localDirectory.path}${_actualLogDirectory.trim().isEmpty ? "" : "/$_actualLogDirectory"}";
+        "${localDirectory.path}${_actualLogDirectory!.trim().isEmpty ? "" : "/$_actualLogDirectory"}";
 
     Directory logsDirectory;
     try {
@@ -49,19 +51,15 @@ class ActionLogHelper {
   /// a list of [FileSystemEntity] objects. These objects should contain all the
   /// necessary information for each file. Note that any folders in the
   /// directory will *not* be returned.
-  static Future<List<FileSystemEntity>> getListOfLogs([final String logDirectory]) {
+  static Future<List<FileSystemEntity>> getListOfLogs([final String? logDirectory]) {
     return getLogFilePath(logDirectory ?? _actualLogDirectory).then((filePath) {
       final listOfFiles = Directory(filePath).listSync();
-      if (listOfFiles == null) {
-        return <FileSystemEntity>[];
-      }
-
       return listOfFiles.where((element) => element is File).toList();
     });
   }
 
-  static void displaySnackBar(final String message, {final Widget withAction}) {
-    _scaffoldMessengerKey.currentState.hideCurrentSnackBar();
+  static void displaySnackBar(final String message, {final Widget? withAction}) {
+    _scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
 
     final snackBar = SnackBar(
       content: Row(
@@ -71,6 +69,6 @@ class ActionLogHelper {
         ],
       ),
     );
-    _scaffoldMessengerKey.currentState.showSnackBar(snackBar);
+    _scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
   }
 }
