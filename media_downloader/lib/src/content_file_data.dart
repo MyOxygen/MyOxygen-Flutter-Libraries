@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 /// and caching.
 class ContentFileData {
   final String fileName;
-  final String dataUrl;
+  final Uri dataUrl;
 
   /// [fileName] should be unique for each piece of content,
   /// otherwise it'll overwrite other content.
