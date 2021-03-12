@@ -24,8 +24,6 @@ class LogFileViewer extends StatefulWidget {
 }
 
 class _LogFileViewerState extends State<LogFileViewer> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   String fileContents = "";
 
   @override
@@ -55,7 +53,6 @@ class _LogFileViewerState extends State<LogFileViewer> {
         }
 
         return Scaffold(
-          key: _scaffoldKey,
           appBar: AppBar(
             title: Text(widget.title),
             actions: [
@@ -106,20 +103,19 @@ class _LogFileViewerState extends State<LogFileViewer> {
 
   Future<void> _onDeletePressed() async {
     ActionLogHelper.displaySnackBar(
-      _scaffoldKey.currentState,
       "Are you sure you wish to delete?",
-      withAction: FlatButton(
+      withAction: TextButton(
         child: Text("Delete"),
-        textColor: Colors.red,
+        style: TextButton.styleFrom(primary: Colors.red),
         onPressed: () async {
           final success = await _doAction(
             widget.fileSystemEntity.delete(),
-            "Log file delete successfully.",
+            "Log file deleted successfully.",
             "Failed to delete log file.",
           );
 
           if (success) {
-            Navigator.pop(context, success);
+            Navigator.pop<bool>(context, success);
           }
         },
       ),
@@ -142,7 +138,7 @@ class _LogFileViewerState extends State<LogFileViewer> {
       success = false;
     }
 
-    ActionLogHelper.displaySnackBar(_scaffoldKey.currentState, snackbarMessage);
+    ActionLogHelper.displaySnackBar(snackbarMessage);
 
     return success;
   }

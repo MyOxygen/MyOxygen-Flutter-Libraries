@@ -8,6 +8,12 @@ class ActionLogHelper {
   static const _logDirectory = "logs";
   static String _actualLogDirectory;
   static FileHandler _fileHandler;
+  static GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey;
+
+  static void setScaffoldMessengerKey(
+      final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) {
+    _scaffoldMessengerKey = scaffoldMessengerKey;
+  }
 
   static void setFileHandler(final FileHandler fileHandler) {
     _fileHandler = fileHandler ?? FileHandler();
@@ -54,9 +60,8 @@ class ActionLogHelper {
     });
   }
 
-  static void displaySnackBar(final ScaffoldState scaffoldState, final String message,
-      {final Widget withAction}) {
-    scaffoldState.hideCurrentSnackBar();
+  static void displaySnackBar(final String message, {final Widget withAction}) {
+    _scaffoldMessengerKey.currentState.hideCurrentSnackBar();
 
     final snackBar = SnackBar(
       content: Row(
@@ -66,6 +71,6 @@ class ActionLogHelper {
         ],
       ),
     );
-    scaffoldState.showSnackBar(snackBar);
+    _scaffoldMessengerKey.currentState.showSnackBar(snackBar);
   }
 }

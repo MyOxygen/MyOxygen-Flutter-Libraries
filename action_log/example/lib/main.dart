@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:action_log/action_log.dart';
 
+final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await ActionLog.initialise(isPublicRelease: false);
+  await ActionLog.initialise(isPublicRelease: false, scaffoldMessengerKey: _scaffoldMessengerKey);
 
   runApp(MyApp());
 }
@@ -21,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('ActionLog - Demonstration'),
@@ -43,7 +46,7 @@ class _MyAppState extends State<MyApp> {
             Expanded(
               child: Center(
                 child: Builder(
-                  builder: (context) => RaisedButton(
+                  builder: (context) => ElevatedButton(
                     child: Text("View logs"),
                     onPressed: () => ActionLog.navigateToLogsListView(context),
                   ),

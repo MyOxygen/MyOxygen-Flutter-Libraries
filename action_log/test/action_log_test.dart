@@ -15,17 +15,19 @@ const logFileNameWithExtension = "1612182198635.txt";
 final logFileNameAsDateTime = DateTime.fromMillisecondsSinceEpoch(int.tryParse(logFileName));
 final logFileNameDisplayed = "01 Feb 2021 - 12:23:18";
 final mockObserver = MockNavigatorObserver();
+final key = GlobalKey<ScaffoldMessengerState>();
 
 FileHandler fileHandler;
 
 Future<void> _createApp(WidgetTester tester) async {
   final app = MaterialApp(
+    scaffoldMessengerKey: key,
     navigatorObservers: [mockObserver],
     home: Builder(
       builder: (BuildContext context) {
         return Scaffold(
           body: Center(
-            child: RaisedButton(
+            child: ElevatedButton(
               child: const Text(buttonText),
               onPressed: () => ActionLog.navigateToLogsListView(context),
             ),
@@ -49,6 +51,7 @@ void main() {
       logFolderName: "",
       fileName: logFileNameWithExtension,
       fileHandler: fileHandler,
+      scaffoldMessengerKey: key,
     );
   });
 

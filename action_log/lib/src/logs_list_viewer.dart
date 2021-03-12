@@ -19,8 +19,6 @@ class LogsListViewer extends StatefulWidget {
 }
 
 class _LogsListViewerState extends State<LogsListViewer> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   List<FileSystemEntity> listOfFiles;
 
   @override
@@ -51,7 +49,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
                     color: Colors.blue[300],
                   ),
                   onTap: () async {
-                    final fileDeleted = await Navigator.push(
+                    final fileDeleted = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
                         builder: (_) => LogFileViewer(
@@ -68,10 +66,6 @@ class _LogsListViewerState extends State<LogsListViewer> {
                       // We need to reload the page to stop displaying the
                       // non-existing file.
                       setState(() {});
-                      ActionLogHelper.displaySnackBar(
-                        _scaffoldKey.currentState,
-                        "Log file delete successfully.",
-                      );
                     }
                   },
                 );
@@ -81,7 +75,6 @@ class _LogsListViewerState extends State<LogsListViewer> {
         }
 
         return Scaffold(
-            key: _scaffoldKey,
             appBar: AppBar(
               title: Text("Logs List"),
               centerTitle: true,
@@ -111,11 +104,10 @@ class _LogsListViewerState extends State<LogsListViewer> {
 
   Future<void> _onDeletePressed() async {
     ActionLogHelper.displaySnackBar(
-      _scaffoldKey.currentState,
       "Are you sure you wish to delete all log files?",
-      withAction: FlatButton(
+      withAction: TextButton(
         child: Text("Delete all"),
-        textColor: Colors.red,
+        style: TextButton.styleFrom(primary: Colors.red),
         onPressed: () async {
           String snackBarMessage = "Log files deleted.";
           for (final file in listOfFiles) {
@@ -128,7 +120,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
 
           // Whether errors occur or not, we need to reload the page.
           setState(() {});
-          ActionLogHelper.displaySnackBar(_scaffoldKey.currentState, snackBarMessage);
+          ActionLogHelper.displaySnackBar(snackBarMessage);
         },
       ),
     );

@@ -27,6 +27,7 @@ class ActionLog {
   /// logging to a file.
   static Future<void> initialise({
     @required bool isPublicRelease,
+    @required GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,
     String logFolderName,
     String fileName,
     FileHandler fileHandler, // For testing
@@ -37,6 +38,9 @@ class ActionLog {
       // Don't log in public release mode.
       return;
     }
+
+    // Initialise the ScaffoldMessenger key
+    ActionLogHelper.setScaffoldMessengerKey(scaffoldMessengerKey);
 
     // Enable console logging before all else, which will allow devs to see why
     // creating a directory could go wrong.
