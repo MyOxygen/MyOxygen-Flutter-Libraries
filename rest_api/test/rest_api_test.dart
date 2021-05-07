@@ -19,7 +19,7 @@ const _keyB = "queryB";
 const _valueB = "valueB";
 
 void main() {
-  const _fullUrl = "$_baseUrl$_endpoint?$_keyA=$_valueA&$_keyB=$_valueB";
+  final _fullUrl = Uri.parse("$_baseUrl$_endpoint?$_keyA=$_valueA&$_keyB=$_valueB");
 
   _MockClient _client;
   RestApi restApi;

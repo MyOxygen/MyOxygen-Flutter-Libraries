@@ -187,9 +187,10 @@ class RestApi {
 
   /// Builds a url by concatenating the [baseUrl] and [endpoint] and automatically
   /// makes a query string out of [query]
-  String _buildUrl(String endpoint, Map<String, String> query) {
+  Uri _buildUrl(String endpoint, Map<String, String> query) {
     final fullUrl = baseUrl + endpoint + buildQueryParameters(query);
-    return Uri.encodeFull(fullUrl);
+    final encoded = Uri.encodeFull(fullUrl);
+    return Uri.parse(encoded);
   }
 
   /// Converts a map of {query : parameter} to url encoded query parameters

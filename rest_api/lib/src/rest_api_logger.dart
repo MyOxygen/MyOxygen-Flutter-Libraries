@@ -14,7 +14,7 @@ class RestApiLogger {
 
   void logRequest(
     RestRequestType requestType,
-    String url, {
+    Uri url, {
     JsonObject jsonBody,
     Map<String, String> headers,
   }) {
@@ -44,11 +44,11 @@ class RestApiLogger {
   /// Prints a request.
   void _logRequest(
     RestRequestType requestType,
-    String url, {
+    Uri url, {
     JsonObject jsonBody,
     Map<String, String> headers,
   }) {
-    debugPrint("---> ${_requestTypeName(requestType)} ${url ?? "NULL"}");
+    debugPrint("---> ${_requestTypeName(requestType)} ${url?.toString() ?? "NULL"}");
     if (headers != null) {
       headers.forEach((k, v) => debugPrint("---> $k : $v"));
     }
