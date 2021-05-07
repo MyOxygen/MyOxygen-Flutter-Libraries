@@ -1,11 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:rest_api/src/rest_api_impl.dart';
 
-import 'rest_api_impl.dart';
-import 'json_object.dart';
-
-export 'json_object.dart';
+import '../rest_api.dart';
 
 class RestApiLogger {
   /// Log the networking stuff. Keeps the logging code out of the
@@ -73,7 +69,7 @@ class RestApiLogger {
       return;
     }
 
-    debugPrint("<--- ${response.statusCode} ${response.request.url}");
+    debugPrint("<--- ${response.statusCode} ${response.request?.url}");
     if (response.headers != null) {
       response.headers.forEach((k, v) => debugPrint("<--- $k : $v"));
     }

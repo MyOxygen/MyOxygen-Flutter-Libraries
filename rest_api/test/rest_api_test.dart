@@ -175,6 +175,9 @@ class _MockHeaderProvider extends HeaderProvider {
   final String name;
   final String value;
 
+  @override
+  List<Object> get props => [name, value];
+
   const _MockHeaderProvider({
     this.name = _headerName,
     this.value = _headerValue,

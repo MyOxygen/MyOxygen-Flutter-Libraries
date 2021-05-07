@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
+import '../rest_api.dart';
 import 'json_object.dart';
 import 'rest_api_errors.dart';
 import 'rest_api_logger.dart';
@@ -19,8 +20,6 @@ export 'rest_response.dart';
 
 const _timeout = Duration(seconds: 30);
 
-enum RestRequestType { post, get, put, delete }
-
 /// Provides generic POST, GET, PUT, and DELETE Rest requests. The class should
 /// be used to facilitate API calls to any server.
 class RestApi {
@@ -29,6 +28,7 @@ class RestApi {
   final List<HeaderProvider> defaultHeaderProviders;
   final Client clientOverride;
   final Duration timeout;
+  final List<RestApiInterceptor> defaultInterceptors;
 
   /// [baseUrl] is the endpoint we're pointing at. It will be prepended to all requests.
   /// [defaultHeaderProviders] intercept the api calls, and will add any required headers.
@@ -36,12 +36,14 @@ class RestApi {
   /// [logger] is intercepts requests and logs them (nullable).
   /// [clientOverride] can be used to set a specific client. By default, it'll use a new client for each call.
   /// [timeout] is the duration the call will wait before giving out. Defaults to 30s
+  /// [defaultInterceptors] will be applied to all requests where the [interceptors] paramter is null.
   const RestApi({
     @required this.baseUrl,
     @required this.defaultHeaderProviders,
     this.logger = const RestApiLogger(),
     this.clientOverride,
     this.timeout = _timeout,
+    this.defaultInterceptors = const [],
   }) : assert(baseUrl != null);
 
   // create a new client, unless an override is provided.
@@ -57,13 +59,17 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
-      RestRequestType.get,
-      endpoint,
-      jsonBody: jsonBody,
-      queryParameters: queryParameters,
-      headerProviders: headers ?? [],
+      RestApiRequest(
+        requestType: RestRequestType.get,
+        endpoint: endpoint,
+        jsonBody: jsonBody,
+        queryParameters: queryParameters,
+        headerProviders: headers ?? [],
+      ),
+      interceptors,
     );
   }
 
@@ -77,13 +83,17 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
-      RestRequestType.post,
-      endpoint,
-      jsonBody: jsonBody,
-      queryParameters: queryParameters,
-      headerProviders: headers ?? [],
+      RestApiRequest(
+        requestType: RestRequestType.post,
+        endpoint: endpoint,
+        jsonBody: jsonBody,
+        queryParameters: queryParameters,
+        headerProviders: headers ?? [],
+      ),
+      interceptors,
     );
   }
 
@@ -97,13 +107,17 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
-      RestRequestType.delete,
-      endpoint,
-      jsonBody: jsonBody,
-      queryParameters: queryParameters,
-      headerProviders: headers ?? [],
+      RestApiRequest(
+        requestType: RestRequestType.delete,
+        endpoint: endpoint,
+        jsonBody: jsonBody,
+        queryParameters: queryParameters,
+        headerProviders: headers ?? [],
+      ),
+      interceptors,
     );
   }
 
@@ -117,63 +131,61 @@ class RestApi {
     JsonObject jsonBody,
     Map<String, String> queryParameters,
     List<HeaderProvider> headers,
+    List<RestApiInterceptor> interceptors,
   }) {
     return _makeRequest(
-      RestRequestType.put,
-      endpoint,
-      jsonBody: jsonBody,
-      queryParameters: queryParameters,
-      headerProviders: headers,
+      RestApiRequest(
+        requestType: RestRequestType.put,
+        endpoint: endpoint,
+        jsonBody: jsonBody,
+        queryParameters: queryParameters,
+        headerProviders: headers,
+      ),
+      interceptors,
     );
   }
 
   /// Makes a network call based on [requestType]
   Future<RestResponse> _makeRequest(
-    RestRequestType requestType,
-    String endpoint, {
-    @required JsonObject jsonBody,
-    @required Map<String, String> queryParameters,
-    @required List<HeaderProvider> headerProviders,
-  }) async {
-    assert(endpoint != null);
-    assert(endpoint != "");
-
+    RestApiRequest request,
+    List<RestApiInterceptor> interceptors,
+  ) async {
     // Add the query parameters automatically.
-    final url = _buildUrl(endpoint, queryParameters);
+    final url = _buildUrl(request.endpoint, request.queryParameters);
 
     // add the defaultHeaderProviders first, then add the extra ones so that
     // they can override on a call by call basis.
     final combinedHeaders = List<HeaderProvider>.from(defaultHeaderProviders ?? []);
-    if (headerProviders != null && headerProviders.isNotEmpty) {
-      combinedHeaders.addAll(headerProviders);
+    if (request.headerProviders != null && request.headerProviders.isNotEmpty) {
+      combinedHeaders.addAll(request.headerProviders);
     }
 
     final headers = await createHeaderMap(combinedHeaders);
 
-    logger?.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
+    logger?.logRequest(request.requestType, url, headers: headers, jsonBody: request.jsonBody);
 
     // Shouldn't matter if the json parameter is null.
     Response response;
     try {
-      switch (requestType) {
+      switch (request.requestType) {
         case RestRequestType.post:
-          response = await _client
-              .post(url, headers: headers, body: jsonBody?.jsonString)
-              .timeout(_timeout);
+          final future = _client.post(url, headers: headers, body: request.jsonBody?.jsonString);
+          response = await future.timeout(_timeout);
           break;
 
         case RestRequestType.get:
-          response = await _client.get(url, headers: headers).timeout(_timeout);
+          final future = _client.get(url, headers: headers);
+          response = await future.timeout(_timeout);
           break;
 
         case RestRequestType.put:
-          response = await _client
-              .put(url, headers: headers, body: jsonBody?.jsonString)
-              .timeout(_timeout);
+          final future = _client.put(url, headers: headers, body: request.jsonBody?.jsonString);
+          response = await future.timeout(_timeout);
           break;
 
         case RestRequestType.delete:
-          response = await _client.delete(url, headers: headers).timeout(_timeout);
+          final future = _client.delete(url, headers: headers);
+          response = await future.timeout(_timeout);
           break;
       }
     } on SocketException {
@@ -181,6 +193,12 @@ class RestApi {
     }
 
     logger?.logResponse(response);
+
+    final interceptorsForThisRequest = interceptors ?? this.defaultInterceptors;
+
+    for (final interceptor in interceptorsForThisRequest) {
+      response = await interceptor.interceptAfterResponse(this, _client, response);
+    }
 
     return _createRestResponse(response);
   }
@@ -238,6 +256,7 @@ class RestApi {
       statusCode: response.statusCode,
       body: responseBody,
       headers: headers,
+      rawResponse: response,
     );
 
     /// call the subclass listener
