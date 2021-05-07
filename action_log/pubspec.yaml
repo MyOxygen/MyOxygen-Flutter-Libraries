@@ -1,6 +1,6 @@
 name: action_log
 description: A new flutter plugin project.
-version: 0.0.5
+version: 0.0.6
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -11,10 +11,10 @@ dependencies:
     sdk: flutter
 
   fimber_io: ^0.6.1
-  google_fonts: ^1.1.2
+  google_fonts: ^2.0.0
   intl: ^0.17.0
   path_provider: ^2.0.1
-  synchronized: ^2.2.0+2
+  synchronized: ^3.0.0
 
 dev_dependencies:
   flutter_test:
