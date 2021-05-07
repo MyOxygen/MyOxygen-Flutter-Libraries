@@ -1,8 +1,6 @@
 name: store
 description: A new Flutter package project.
-version: 0.0.4
-author:
-homepage:
+version: 0.0.5
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -10,7 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: 0.5.12+4
+  shared_preferences: ^2.0.5
 
 dev_dependencies:
   flutter_test:
