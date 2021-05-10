@@ -6,25 +6,20 @@ import 'internal/file_handler.dart';
 
 class ActionLogHelper {
   static const _logDirectory = "logs";
-  static String _actualLogDirectory;
-  static FileHandler _fileHandler;
+  static String? _actualLogDirectory;
+  static late FileHandler? _fileHandler;
 
-  static void setFileHandler(final FileHandler fileHandler) {
+  static void setFileHandler(final FileHandler? fileHandler) {
     _fileHandler = fileHandler ?? FileHandler();
   }
 
   /// Retrieves the app's directory where the logs will be stored. Returns the
   /// directory path as a [String].
-  static Future<String> getLogFilePath(final String logDirectory) async {
-    final localDirectory = await _fileHandler.getCurrentDirectory();
-    if (localDirectory == null) {
-      throw "Application directory was NULL";
-    }
+  static Future<String> getLogFilePath({String? logDirectory}) async {
+    assert(_fileHandler != null);
+    final localDirectory = await _fileHandler!.getCurrentDirectory();
 
-    _actualLogDirectory = logDirectory;
-    if (_actualLogDirectory == null) {
-      _actualLogDirectory = _logDirectory;
-    }
+    final _actualLogDirectory = logDirectory ?? _logDirectory;
 
     final directoryPath =
         "${localDirectory.path}${_actualLogDirectory.trim().isEmpty ? "" : "/$_actualLogDirectory"}";
@@ -43,20 +38,16 @@ class ActionLogHelper {
   /// a list of [FileSystemEntity] objects. These objects should contain all the
   /// necessary information for each file. Note that any folders in the
   /// directory will *not* be returned.
-  static Future<List<FileSystemEntity>> getListOfLogs([final String logDirectory]) {
-    return getLogFilePath(logDirectory ?? _actualLogDirectory).then((filePath) {
+  static Future<List<FileSystemEntity>> getListOfLogs([final String logDirectory = _logDirectory]) {
+    return getLogFilePath().then((filePath) {
       final listOfFiles = Directory(filePath).listSync();
-      if (listOfFiles == null) {
-        return <FileSystemEntity>[];
-      }
-
       return listOfFiles.where((element) => element is File).toList();
     });
   }
 
-  static void displaySnackBar(final ScaffoldState scaffoldState, final String message,
-      {final Widget withAction}) {
-    scaffoldState.hideCurrentSnackBar();
+  static void displaySnackBar(final ScaffoldMessengerState messengerState, final String message,
+      {final Widget? withAction}) {
+    messengerState.hideCurrentSnackBar();
 
     final snackBar = SnackBar(
       content: Row(
@@ -66,6 +57,6 @@ class ActionLogHelper {
         ],
       ),
     );
-    scaffoldState.showSnackBar(snackBar);
+    messengerState.showSnackBar(snackBar);
   }
 }

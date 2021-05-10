@@ -8,8 +8,8 @@ import 'internal/file_handler.dart';
 import 'logs_list_viewer.dart';
 
 class ActionLog {
-  static String _filePath;
-  static String _lastFileName;
+  static String? _filePath;
+  static String? _lastFileName;
 
   // Use a [Lock] to ensure that only one statements is written into the log
   // file at a time. This ensures that if the app sends two logs at the same
@@ -26,13 +26,11 @@ class ActionLog {
   /// There is an optional `fileName` for specifying the filename to use when
   /// logging to a file.
   static Future<void> initialise({
-    @required bool isPublicRelease,
-    String logFolderName,
-    String fileName,
-    FileHandler fileHandler, // For testing
+    required bool isPublicRelease,
+    String? logFolderName,
+    String? fileName,
+    FileHandler? fileHandler, // For testing
   }) async {
-    assert(isPublicRelease != null);
-
     if (isPublicRelease) {
       // Don't log in public release mode.
       return;
@@ -43,7 +41,7 @@ class ActionLog {
     Fimber.plantTree(DebugTree(useColors: true));
     ActionLogHelper.setFileHandler(fileHandler);
 
-    _filePath = await ActionLogHelper.getLogFilePath(logFolderName);
+    _filePath = await ActionLogHelper.getLogFilePath(logDirectory: logFolderName);
 
     // Create a new file on every initialisation with the date/time (unix
     // format) as the file name. This helps determine when the app was

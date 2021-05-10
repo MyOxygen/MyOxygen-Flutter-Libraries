@@ -3,11 +3,15 @@ import 'dart:io';
 import 'package:action_log/src/action_log_helper.dart';
 import 'package:action_log/src/internal/file_handler.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+
+import 'action_log_helper_test.mocks.dart';
 
 const dynamicDirectoryPath = "./test/resources/";
 const existingLogEntry = "This is a test log.";
 
+@GenerateMocks([FileHandler])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -34,19 +38,7 @@ void main() {
   }
 
   test("Logs directory is correct.", () async {
-    final logFilePath = await ActionLogHelper.getLogFilePath("");
+    final logFilePath = await ActionLogHelper.getLogFilePath(logDirectory: "");
     expect(logFilePath, dynamicDirectoryPath);
   });
-
-  test("Retrieving list of log files.", () async {
-    await _getLogFiles();
-  });
-
-  test("Read a log file from list.", () async {
-    final logFiles = await _getLogFiles();
-    final logFileContents = await (logFiles.first as File).readAsString();
-    expect(logFileContents, contains("This is a test log"));
-  });
 }
-
-class MockFileHandler extends Mock implements FileHandler {}

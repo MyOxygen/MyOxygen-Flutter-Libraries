@@ -21,7 +21,7 @@ class LogsListViewer extends StatefulWidget {
 class _LogsListViewerState extends State<LogsListViewer> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<FileSystemEntity> listOfFiles;
+  List<FileSystemEntity>? listOfFiles;
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +31,19 @@ class _LogsListViewerState extends State<LogsListViewer> {
         Widget body;
 
         if (snapshot.hasError) {
-          body = ErrorDisplay(snapshot.error);
+          body = ErrorDisplay(snapshot.error.toString());
         } else if (!snapshot.hasData) {
           body = Center(child: CircularProgressIndicator());
         } else {
           listOfFiles = snapshot.data;
-          if (listOfFiles.isEmpty) {
+          final files = listOfFiles;
+          if (files == null || files.isEmpty) {
             body = Center(child: Text("No files to show."));
           } else {
             body = ListView.builder(
-              itemCount: listOfFiles.length,
+              itemCount: listOfFiles?.length ?? 0,
               itemBuilder: (BuildContext context, int index) {
-                final fileName = basenameWithoutExtension(listOfFiles[index].path);
+                final fileName = basenameWithoutExtension(files[index].path);
                 final formattedString = _formatFileName(fileName);
                 return ListTile(
                   title: Text(formattedString),
@@ -56,7 +57,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
                       MaterialPageRoute(
                         builder: (_) => LogFileViewer(
                           title: formattedString,
-                          fileSystemEntity: listOfFiles[index],
+                          fileSystemEntity: files[index],
                         ),
                       ),
                     );
@@ -69,7 +70,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
                       // non-existing file.
                       setState(() {});
                       ActionLogHelper.displaySnackBar(
-                        _scaffoldKey.currentState,
+                        ScaffoldMessenger.of(context),
                         "Log file delete successfully.",
                       );
                     }
@@ -87,10 +88,10 @@ class _LogsListViewerState extends State<LogsListViewer> {
               centerTitle: true,
               actions: [
                 // Delete this log file
-                if (listOfFiles != null && listOfFiles.isNotEmpty)
+                if (listOfFiles != null && listOfFiles!.isNotEmpty)
                   IconButton(
                     icon: Icon(Icons.delete_forever),
-                    onPressed: _onDeletePressed,
+                    onPressed: () => _onDeletePressed(context),
                   ),
               ],
             ),
@@ -109,16 +110,16 @@ class _LogsListViewerState extends State<LogsListViewer> {
     return DateFormat("dd MMM yyyy - HH:mm:ss").format(dateTime);
   }
 
-  Future<void> _onDeletePressed() async {
+  Future<void> _onDeletePressed(BuildContext context) async {
     ActionLogHelper.displaySnackBar(
-      _scaffoldKey.currentState,
+      ScaffoldMessenger.of(context),
       "Are you sure you wish to delete all log files?",
       withAction: FlatButton(
         child: Text("Delete all"),
         textColor: Colors.red,
         onPressed: () async {
           String snackBarMessage = "Log files deleted.";
-          for (final file in listOfFiles) {
+          for (final file in listOfFiles ?? []) {
             try {
               await file.delete();
             } catch (e) {
@@ -128,7 +129,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
 
           // Whether errors occur or not, we need to reload the page.
           setState(() {});
-          ActionLogHelper.displaySnackBar(_scaffoldKey.currentState, snackBarMessage);
+          ActionLogHelper.displaySnackBar(ScaffoldMessenger.of(context), snackBarMessage);
         },
       ),
     );
