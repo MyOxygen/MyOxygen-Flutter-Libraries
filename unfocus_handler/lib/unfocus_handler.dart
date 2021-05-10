@@ -11,10 +11,9 @@ class UnfocusHandler extends StatelessWidget {
   /// To allow screen-readers to express "double tap to active" (or similar),
   /// set `excludeFromSemantics` to `false`.
   const UnfocusHandler({
-    @required this.child,
+    required this.child,
     this.excludeFromSemantics = true,
-  })  : assert(child != null),
-        assert(excludeFromSemantics != null);
+  });
 
   /// Clears any focus on the page.
   static void clearFocus(BuildContext context) {
