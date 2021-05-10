@@ -11,10 +11,11 @@ class SnackBarPresenter {
   const SnackBarPresenter._();
 
   /// Present an information [SnackBar] in the provided [Scaffold].
-  static void presentInformation(ScaffoldState scaffoldState, String message, {Color iconColor}) {
+  static void presentInformation(ScaffoldMessengerState messengerState, String message,
+      {Color? iconColor}) {
     // If the `iconColor` is null, it will default to the icon theme data color.
     _presentSnackbar(
-      scaffoldState,
+      messengerState,
       message,
       iconColor,
       FontAwesomeIcons.infoCircle,
@@ -22,9 +23,10 @@ class SnackBarPresenter {
   }
 
   /// Present a success [SnackBar] in the provided [Scaffold].
-  static void presentSuccess(ScaffoldState scaffoldState, String message, {Color iconColor}) {
+  static void presentSuccess(ScaffoldMessengerState messengerState, String message,
+      {Color? iconColor}) {
     _presentSnackbar(
-      scaffoldState,
+      messengerState,
       message,
       iconColor ?? _successColor,
       FontAwesomeIcons.solidCheckCircle,
@@ -32,9 +34,10 @@ class SnackBarPresenter {
   }
 
   /// Present an error [SnackBar] in the provided [Scaffold].
-  static void presentError(ScaffoldState scaffoldState, String error, {Color iconColor}) {
+  static void presentError(ScaffoldMessengerState messengerState, String error,
+      {Color? iconColor}) {
     _presentSnackbar(
-      scaffoldState,
+      messengerState,
       error,
       iconColor ?? _errorColor,
       FontAwesomeIcons.exclamationCircle,
@@ -43,11 +46,11 @@ class SnackBarPresenter {
 
   /// Handles displaying the action [SnackBar] with its contents.
   static void _presentSnackbar(
-      ScaffoldState scaffoldState, String message, Color color, IconData icon) {
-    assert(scaffoldState != null);
-    assert(message != null);
-    assert(message.isNotEmpty);
-
+    ScaffoldMessengerState messengerState,
+    String message,
+    Color? color,
+    IconData icon,
+  ) {
     final snackbar = SnackBar(
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,8 +69,8 @@ class SnackBarPresenter {
 
     // Hide any currently showing SnackBars. If there are none, this will do
     // nothing.
-    scaffoldState.hideCurrentSnackBar();
+    messengerState.hideCurrentSnackBar();
 
-    scaffoldState.showSnackBar(snackbar);
+    messengerState.showSnackBar(snackbar);
   }
 }

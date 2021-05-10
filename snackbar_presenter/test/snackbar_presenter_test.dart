@@ -10,7 +10,7 @@ const _successMessage = "SnackBar Success";
 const _errorMessage = "SnackBar Error";
 const _customColor = Color(0xff0000FF); // Just blue
 
-MaterialApp _appWithSnackBar(void Function(GlobalKey<ScaffoldState>) createSnackBar) {
+MaterialApp _appWithSnackBar(void Function(BuildContext context) createSnackBar) {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   return MaterialApp(
@@ -20,9 +20,9 @@ MaterialApp _appWithSnackBar(void Function(GlobalKey<ScaffoldState>) createSnack
           return Scaffold(
             key: scaffoldKey,
             body: Center(
-              child: RaisedButton(
+              child: ElevatedButton(
                 child: const Text(_buttonText),
-                onPressed: () => createSnackBar(scaffoldKey),
+                onPressed: () => createSnackBar(context),
               ),
             ),
           );
@@ -33,7 +33,7 @@ MaterialApp _appWithSnackBar(void Function(GlobalKey<ScaffoldState>) createSnack
 }
 
 Future<void> _createAppPresentSnackBar(
-    WidgetTester tester, void Function(GlobalKey<ScaffoldState>) createSnackBar) async {
+    WidgetTester tester, void Function(BuildContext context) createSnackBar) async {
   await tester.pumpWidget(_appWithSnackBar(createSnackBar));
 
   await _presentSnackBar(tester);
@@ -64,8 +64,8 @@ void main() {
   }
 
   testWidgets("Information SnackBar shows", (WidgetTester tester) async {
-    final createSnackBar = (GlobalKey<ScaffoldState> key) => SnackBarPresenter.presentInformation(
-        key.currentState, _informationMessage,
+    final createSnackBar = (BuildContext context) => SnackBarPresenter.presentInformation(
+        ScaffoldMessenger.of(context), _informationMessage,
         iconColor: _customColor);
     await _createAppPresentSnackBar(tester, createSnackBar);
 
@@ -73,8 +73,8 @@ void main() {
   });
 
   testWidgets("Success SnackBar shows", (WidgetTester tester) async {
-    final createSnackBar = (GlobalKey<ScaffoldState> key) => SnackBarPresenter.presentSuccess(
-        key.currentState, _successMessage,
+    final createSnackBar = (BuildContext context) => SnackBarPresenter.presentSuccess(
+        ScaffoldMessenger.of(context), _successMessage,
         iconColor: _customColor);
     await _createAppPresentSnackBar(tester, createSnackBar);
 
@@ -82,8 +82,9 @@ void main() {
   });
 
   testWidgets("Error SnackBar shows", (WidgetTester tester) async {
-    final createSnackBar = (GlobalKey<ScaffoldState> key) =>
-        SnackBarPresenter.presentError(key.currentState, _errorMessage, iconColor: _customColor);
+    final createSnackBar = (BuildContext context) => SnackBarPresenter.presentError(
+        ScaffoldMessenger.of(context), _errorMessage,
+        iconColor: _customColor);
     await _createAppPresentSnackBar(tester, createSnackBar);
 
     _testForSnackBarContent(_errorMessage, FontAwesomeIcons.exclamationCircle);
@@ -91,11 +92,11 @@ void main() {
 
   testWidgets("Hide currently showing SnackBar", (WidgetTester tester) async {
     int tapCount = 0;
-    final buttonHandler = (GlobalKey<ScaffoldState> key) {
+    final buttonHandler = (BuildContext context) {
       if (tapCount % 2 == 0) {
-        SnackBarPresenter.presentInformation(key.currentState, _informationMessage);
+        SnackBarPresenter.presentInformation(ScaffoldMessenger.of(context), _informationMessage);
       } else {
-        SnackBarPresenter.presentSuccess(key.currentState, _successMessage);
+        SnackBarPresenter.presentSuccess(ScaffoldMessenger.of(context), _successMessage);
       }
       tapCount++;
     };
