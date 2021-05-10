@@ -9,7 +9,7 @@ MaterialApp _appWithDialog(Function(BuildContext) createDialog) {
       child: Builder(
         builder: (BuildContext context) {
           return Center(
-            child: RaisedButton(
+            child: TextButton(
               child: const Text("Open Dialog"),
               onPressed: () => createDialog(context),
             ),
@@ -66,7 +66,7 @@ void main() {
   });
 
   testWidgets("Confirmation dialog opens and closes", (WidgetTester tester) async {
-    bool didContinue = false;
+    bool? didContinue = false;
     final createDialog = (context) async {
       didContinue = await QuickDialogs.confirmationDialogAsync(
         context,
