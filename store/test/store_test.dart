@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store/store.dart';
+
+import 'store_test.mocks.dart';
 
 const _boolKey = "BOOL_KEY";
 const _boolValue = true;
@@ -15,12 +18,16 @@ const _intValue = 100;
 const _doubleKey = "DOUBLE_KEY";
 const _doubleValue = 3.14;
 
+// Generate mocks by running
+// flutter pub run build_runner build
+
+@GenerateMocks([SharedPreferences])
 void main() {
-  Store store;
-  _TestSharedPreferences _testSharedPreferences;
+  late Store store;
+  late SharedPreferences _testSharedPreferences;
 
   setUp(() {
-    _testSharedPreferences = _TestSharedPreferences();
+    _testSharedPreferences = MockSharedPreferences();
 
     // inject a mock version of the library.
     store = Store(
@@ -80,5 +87,3 @@ void main() {
     verify(_testSharedPreferences.getDouble(_doubleKey));
   });
 }
-
-class _TestSharedPreferences extends Mock implements SharedPreferences {}

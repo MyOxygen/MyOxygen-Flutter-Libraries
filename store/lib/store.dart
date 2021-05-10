@@ -1,6 +1,5 @@
 library store;
 
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// A function that provides an instance of the [SharedPreferences] library
@@ -18,7 +17,7 @@ class Store {
   /// [_preferencesProvider] can be used to supply an instance of the library.
   const Store([
     this._preferencesProvider = _defaultPreferencesProvider,
-  ]) : assert(_preferencesProvider != null);
+  ]);
 
   /// Gets an instance of the [SharedPreferences] library.
   /// uses [_preferencesBuilder] if supplied.
@@ -35,17 +34,14 @@ class Store {
 
   /// Get a value from the store with the key [key].
   /// May return null if nothing is set with that key.
-  Future<bool> getBool(String key) {
-    assert(key != null);
+  Future<bool?> getBool(String key) {
     return _getSharedPrefrences().then((preferences) => preferences.getBool(key));
   }
 
   /// Set [value] in the store with [key].
   /// [value] can be null to clear the store for that value.
   /// Returns the value that was set.
-  Future<bool> setBool(bool value, {@required String key}) async {
-    assert(key != null);
-
+  Future<bool> setBool(bool value, {required String key}) async {
     final preferences = await _getSharedPrefrences();
     final result = await preferences.setBool(key, value);
     assert(result, "Unable to save to shared preferences");
@@ -55,17 +51,14 @@ class Store {
 
   /// Get a value from the store with the key [key].
   /// May return null if nothing is set with that key.
-  Future<int> getInt(String key) {
-    assert(key != null);
+  Future<int?> getInt(String key) {
     return _getSharedPrefrences().then((preferences) => preferences.getInt(key));
   }
 
   /// Set [value] in the store with [key].
   /// [value] can be null to clear the store for that value.
   /// Returns the value that was set.
-  Future<int> setInt(int value, {@required String key}) async {
-    assert(key != null);
-
+  Future<int> setInt(int value, {required String key}) async {
     final preferences = await _getSharedPrefrences();
     final result = await preferences.setInt(key, value);
     assert(result, "Unable to save to shared preferences");
@@ -75,17 +68,14 @@ class Store {
 
   /// Get a value from the store with the key [key].
   /// May return null if nothing is set with that key.
-  Future<double> getDouble(String key) {
-    assert(key != null);
+  Future<double?> getDouble(String key) {
     return _getSharedPrefrences().then((preferences) => preferences.getDouble(key));
   }
 
   /// Set [value] in the store with [key].
   /// [value] can be null to clear the store for that value.
   /// Returns the value that was set.
-  Future<double> setDouble(double value, {@required String key}) async {
-    assert(key != null);
-
+  Future<double> setDouble(double value, {required String key}) async {
     final preferences = await _getSharedPrefrences();
     final result = await preferences.setDouble(key, value);
     assert(result, "Unable to save to shared preferences");
@@ -95,17 +85,14 @@ class Store {
 
   /// Get a value from the store with the key [key].
   /// May return null if nothing is set with that key.
-  Future<String> getString(String key) {
-    assert(key != null);
+  Future<String?> getString(String key) {
     return _getSharedPrefrences().then((preferences) => preferences.getString(key));
   }
 
   /// Set [value] in the store with [key].
   /// [value] can be null to clear the store for that value.
   /// Returns the value that was set.
-  Future<String> setString(String value, {@required String key}) async {
-    assert(key != null);
-
+  Future<String> setString(String value, {required String key}) async {
     final preferences = await _getSharedPrefrences();
     final result = await preferences.setString(key, value);
     assert(result, "Unable to save to shared preferences");
