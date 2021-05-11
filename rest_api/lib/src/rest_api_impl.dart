@@ -213,17 +213,16 @@ class RestApi {
   /// Create a [RestResponse] object from the raw [Response] object
   RestResponse _createRestResponse(Response? response) {
     if (response == null) {
-      logger?.logException(NoResponseError());
+      handleError(NoResponseError());
       throw NoResponseError();
     }
 
-    JsonObject responseBody;
+    JsonObject? responseBody;
 
     try {
       responseBody = JsonObject.fromString(response.body);
     } on RestApiError catch (e) {
-      logger?.logException(e);
-      rethrow;
+      handleError(e);
     }
 
     final headers = Set<Header>();
@@ -250,8 +249,8 @@ class RestApi {
 
   // subclasses can handle the thrown errors differently.
   // the default is just to throw it.
-  // void handleError(RestApiError error) {
-  //   logger?.logException(error);
-  //   throw error;
-  // }
+  void handleError(RestApiError error) {
+    logger?.logException(error);
+    throw error;
+  }
 }
