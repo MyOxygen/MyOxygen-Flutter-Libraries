@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:do_on_build/do_on_build.dart';
 
-MaterialApp _buildTestApp(Function onBuild, {Function testsWhileBuilding}) {
+MaterialApp _buildTestApp(Function onBuild, {required VoidCallback testsWhileBuilding}) {
   return MaterialApp(
     home: Material(
       child: Builder(
         builder: (BuildContext context) {
-          onBuild?.call();
-          testsWhileBuilding?.call();
+          onBuild.call();
+          testsWhileBuilding.call();
           return Center(
             child: const Text("Open Dialog"),
           );
@@ -35,7 +35,7 @@ void main() {
   testWidgets('Numerous doOnBuild() methods called one after the other',
       (WidgetTester tester) async {
     int counter = 0;
-    int shouldBeOne, shouldBeTwo, shouldBeThree = 0;
+    int shouldBeOne = 0, shouldBeTwo = 0, shouldBeThree = 0;
 
     await tester.pumpWidget(_buildTestApp(
       () {
@@ -52,6 +52,7 @@ void main() {
           shouldBeThree = counter;
         });
       },
+      testsWhileBuilding: () {},
     ));
 
     expect(shouldBeOne, 1);
