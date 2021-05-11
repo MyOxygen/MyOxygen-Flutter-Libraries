@@ -39,9 +39,8 @@ class JsonObject {
 
   // Converting back to more useful formats.
 
-  List<T> toList<T>({@required T Function(Map<String, dynamic>) converter}) {
+  List<T> toList<T>({required T Function(Map<String, dynamic>) converter}) {
     final decodedJson = jsonDecode(jsonString) as List<dynamic>;
-    assert(converter != null);
     return decodedJson.cast<Map<String, dynamic>>().map(converter).toList();
   }
 
