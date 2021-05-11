@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 
 import 'json_object.dart';
 import 'rest_api_errors.dart';
@@ -228,11 +227,10 @@ class RestApi {
     }
 
     final headers = Set<Header>();
-    if (response.headers != null) {
-      response.headers.forEach(
-        (key, value) => headers.add(Header(name: key, value: value)),
-      );
-    }
+
+    response.headers.forEach(
+      (key, value) => headers.add(Header(name: key, value: value)),
+    );
 
     final restResponse = RestResponse(
       statusCode: response.statusCode,

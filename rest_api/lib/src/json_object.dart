@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 import 'rest_api_errors.dart';
@@ -16,7 +15,7 @@ class JsonObject {
   /// format when required.
   final String jsonString;
 
-  JsonObject._(this.jsonString) : assert(jsonString != null) {
+  JsonObject._(this.jsonString) {
     // If this gets constructed with an invalid json, throw an exception sooner
     // rather than later.
     if (!_validateJson()) {
@@ -53,7 +52,7 @@ class JsonObject {
   bool _validateJson() {
     try {
       dynamic decoded = jsonString;
-      if (jsonString != null && jsonString.isNotEmpty) {
+      if (jsonString.isNotEmpty) {
         // jsonDecode requires the input string to be non-null at a minimum,
         // otherwise a NoSuchMethodError (aka a null exception) occurs. Empty
         // strings, whilst valid will throw a FormatException.
