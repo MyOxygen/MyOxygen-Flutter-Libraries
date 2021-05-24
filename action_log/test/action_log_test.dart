@@ -6,17 +6,19 @@ import 'package:action_log/src/internal/file_handler.dart';
 import 'package:action_log/src/logs_list_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'action_log_test.mocks.dart';
 
 const dynamicDirectoryPath = "./test/resources/";
 const buttonText = "Display logs";
 const logFileName = "1612182198635";
 const logFileNameWithExtension = "1612182198635.txt";
-final logFileNameAsDateTime = DateTime.fromMillisecondsSinceEpoch(int.tryParse(logFileName));
+final logFileNameAsDateTime = DateTime.fromMillisecondsSinceEpoch(1612182198635);
 final logFileNameDisplayed = "01 Feb 2021 - 12:23:18";
 final mockObserver = MockNavigatorObserver();
 
-FileHandler fileHandler;
+late FileHandler fileHandler;
 
 Future<void> _createApp(WidgetTester tester) async {
   final app = MaterialApp(
@@ -38,6 +40,7 @@ Future<void> _createApp(WidgetTester tester) async {
   await tester.pumpWidget(app);
 }
 
+@GenerateMocks([NavigatorObserver, FileHandler])
 void main() {
   setUpAll(() {
     fileHandler = MockFileHandler();
@@ -50,16 +53,6 @@ void main() {
       fileName: logFileNameWithExtension,
       fileHandler: fileHandler,
     );
-  });
-
-  testWidgets("App builds ok", (WidgetTester tester) async {
-    await tester.runAsync(() async {
-      await _createApp(tester);
-
-      final buttonTextFinder = find.text(buttonText);
-      expect(buttonTextFinder, findsOneWidget,
-          reason: "The main app should be displaying a button to open the logs.");
-    });
   });
 
   testWidgets("Display the list of logs", (WidgetTester tester) async {
@@ -83,7 +76,3 @@ void main() {
     });
   });
 }
-
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
-
-class MockFileHandler extends Mock implements FileHandler {}

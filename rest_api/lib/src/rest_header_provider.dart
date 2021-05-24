@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 /// Provides a headers for a request. To be used with dynamic data that may
 /// change throughout the app's lifecycle. One example is the authentication
 /// token: a [List<Header>] will retain the data staticly, whereas a
@@ -10,7 +8,7 @@ abstract class HeaderProvider {
 
   /// Return a future containting the [Header] that you want to add to the call.
   /// can return null from that future to add no header.
-  Future<Header> getHeader();
+  Future<Header?> getHeader();
 }
 
 /// Just a wrapper object containing our header.
@@ -19,10 +17,9 @@ class Header {
   final String value;
 
   Header({
-    @required this.name,
-    @required this.value,
-  })  : assert(name != null),
-        assert(value != null);
+    required this.name,
+    required this.value,
+  });
 
   @override
   String toString() {

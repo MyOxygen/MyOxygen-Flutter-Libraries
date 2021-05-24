@@ -14,3 +14,7 @@ doc/api/
 
 # Not sure if I can simply ignore *all* *.DS_Store files using this syntax...
 *.DS_Store
+
+media_downloader/.flutter-plugins-dependencies
+database_provider/.flutter-plugins-dependencies
+store/.flutter-plugins-dependencies

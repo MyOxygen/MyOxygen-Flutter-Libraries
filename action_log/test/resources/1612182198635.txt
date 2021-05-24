@@ -1,1 +1,5 @@
-This is a test log.
+This is a test log.2021-05-10T16:59:33.422076	I	Logging initialised	
+2021-05-10T17:02:47.974979	I	Logging initialised	
+2021-05-10T17:19:06.706398	I	Logging initialised	
+2021-05-10T17:19:43.952974	I	Logging initialised	
+2021-05-10T17:21:46.988460	I	Logging initialised	

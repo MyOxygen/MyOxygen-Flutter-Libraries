@@ -13,10 +13,10 @@ class RestApiLogger {
   const RestApiLogger();
 
   void logRequest(
-    RestRequestType requestType,
-    String url, {
-    JsonObject jsonBody,
-    Map<String, String> headers,
+    RestRequestType? requestType,
+    Uri? url, {
+    JsonObject? jsonBody,
+    Map<String, String>? headers,
   }) {
     // Do it in an assert so it only runs in debug mode,
     assert(() {
@@ -25,7 +25,7 @@ class RestApiLogger {
     }());
   }
 
-  void logException(dynamic exception) {
+  void logException(dynamic? exception) {
     // do it in an assert so it only runs in debug mode,
     assert(() {
       _logException(exception);
@@ -33,7 +33,7 @@ class RestApiLogger {
     }());
   }
 
-  void logResponse(Response response) {
+  void logResponse(Response? response) {
     // do it in an assert so it only runs in debug mode,
     assert(() {
       _logResponse(response);
@@ -43,12 +43,12 @@ class RestApiLogger {
 
   /// Prints a request.
   void _logRequest(
-    RestRequestType requestType,
-    String url, {
-    JsonObject jsonBody,
-    Map<String, String> headers,
+    RestRequestType? requestType,
+    Uri? url, {
+    JsonObject? jsonBody,
+    Map<String, String>? headers,
   }) {
-    debugPrint("---> ${_requestTypeName(requestType)} ${url ?? "NULL"}");
+    debugPrint("---> ${_requestTypeName(requestType)} ${url?.toString() ?? "NULL"}");
     if (headers != null) {
       headers.forEach((k, v) => debugPrint("---> $k : $v"));
     }
@@ -67,23 +67,24 @@ class RestApiLogger {
   }
 
   /// Prints a response.
-  void _logResponse(Response response) {
+  void _logResponse(Response? response) {
     if (response == null) {
       debugPrint("<--- Null response");
       return;
     }
 
-    debugPrint("<--- ${response.statusCode} ${response.request.url}");
-    if (response.headers != null) {
-      response.headers.forEach((k, v) => debugPrint("<--- $k : $v"));
-    }
-    if (response.body != null) {
-      debugPrint("<--- Body: ${response.body}");
-    }
+    final url = response.request?.url ?? "";
+    debugPrint("<--- ${response.statusCode} $url");
+    response.headers.forEach((k, v) => debugPrint("<--- $k : $v"));
+    debugPrint("<--- Body: ${response.body}");
   }
 
   // Just for pretty printing.
-  String _requestTypeName(RestRequestType type) {
+  String _requestTypeName(RestRequestType? type) {
+    if (type == null) {
+      return "NULL TYPE";
+    }
+
     switch (type) {
       case RestRequestType.post:
         return "POST";
@@ -94,6 +95,5 @@ class RestApiLogger {
       case RestRequestType.get:
         return "GET";
     }
-    return "NULL TYPE";
   }
 }

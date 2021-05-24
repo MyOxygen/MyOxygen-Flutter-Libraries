@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:rest_api/rest_api.dart';
 import 'package:rest_api/src/rest_api_errors.dart';
 import 'package:rest_api/src/rest_header_provider.dart';
@@ -19,10 +19,10 @@ const _keyB = "queryB";
 const _valueB = "valueB";
 
 void main() {
-  const _fullUrl = "$_baseUrl$_endpoint?$_keyA=$_valueA&$_keyB=$_valueB";
+  final _fullUrl = Uri.parse("$_baseUrl$_endpoint?$_keyA=$_valueA&$_keyB=$_valueB");
 
-  _MockClient _client;
-  RestApi restApi;
+  late _MockClient _client;
+  late RestApi restApi;
 
   setUp(() {
     _client = _MockClient();
@@ -38,7 +38,7 @@ void main() {
   });
 
   test("RestApi makes successfull GET call", () async {
-    when(_client.get(_fullUrl, headers: {_headerName: _headerValue}))
+    when(() => _client.get(_fullUrl, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.get(
@@ -47,11 +47,11 @@ void main() {
     );
 
     expect(result.statusCode, equals(200));
-    expect(result.body.toMap()["key"], equals("value"));
+    expect(result.body!.toMap()["key"], equals("value"));
   });
 
   test("RestApi handles an unsuccessfull GET call", () async {
-    when(_client.get(_fullUrl, headers: {_headerName: _headerValue}))
+    when(() => _client.get(_fullUrl, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 400));
 
     final result = await restApi.get(
@@ -60,11 +60,11 @@ void main() {
     );
 
     expect(result.statusCode, equals(400));
-    expect(result.body.toMap()["key"], equals("value"));
+    expect(result.body!.toMap()["key"], equals("value"));
   });
 
   test("RestApi makes successfull POST call", () async {
-    when(_client.post(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
+    when(() => _client.post(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.post(
@@ -74,11 +74,11 @@ void main() {
     );
 
     expect(result.statusCode, equals(200));
-    expect(result.body.toMap()["key"], equals("value"));
+    expect(result.body!.toMap()["key"], equals("value"));
   });
 
   test("RestApi makes successfull PUT call", () async {
-    when(_client.put(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
+    when(() => _client.put(_fullUrl, body: _mockJSON, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.put(
@@ -88,11 +88,11 @@ void main() {
     );
 
     expect(result.statusCode, equals(200));
-    expect(result.body.toMap()["key"], equals("value"));
+    expect(result.body!.toMap()["key"], equals("value"));
   });
 
   test("RestApi makes successfull DELETE call", () async {
-    when(_client.delete(_fullUrl, headers: {_headerName: _headerValue}))
+    when(() => _client.delete(_fullUrl, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.delete(
@@ -102,25 +102,11 @@ void main() {
     );
 
     expect(result.statusCode, equals(200));
-    expect(result.body.toMap()["key"], equals("value"));
-  });
-
-  test("RestApi handles No response", () async {
-    when(_client.get(_fullUrl, headers: {_headerName: _headerValue})).thenAnswer((_) async => null);
-
-    try {
-      await restApi.get(
-        _endpoint,
-        queryParameters: {_keyA: _valueA, _keyB: _valueB},
-      );
-      expect(false, true, reason: "the api call should have failed before it got here.");
-    } catch (e) {
-      expect(e, isA<NoResponseError>());
-    }
+    expect(result.body!.toMap()["key"], equals("value"));
   });
 
   test("RestApi handles SocketException", () async {
-    when(_client.get(_fullUrl, headers: {_headerName: _headerValue}))
+    when(() => _client.get(_fullUrl, headers: {_headerName: _headerValue}))
         .thenAnswer((_) async => throw SocketException("No Connection"));
 
     try {
@@ -153,7 +139,7 @@ void main() {
       newHeaderName: newHeaderValue,
     };
 
-    when(_client.get(_fullUrl, headers: expectedHeaders))
+    when(() => _client.get(_fullUrl, headers: expectedHeaders))
         .thenAnswer((_) async => Response(_mockJSON, 200));
 
     final result = await restApi.get(
@@ -164,7 +150,7 @@ void main() {
     );
 
     expect(result.statusCode, equals(200));
-    expect(result.body.toMap()["key"], equals("value"));
+    expect(result.body!.toMap()["key"], equals("value"));
   });
 }
 
