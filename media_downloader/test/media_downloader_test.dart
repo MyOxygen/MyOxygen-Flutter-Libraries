@@ -8,7 +8,7 @@ import 'package:mockito/mockito.dart';
 
 const _fileName = "file-loader-123";
 const _diskId = 222;
-const _url = "http://i.imgur.com/7SByB.jpg";
+final _url = Uri.http("i.imgur.com", "7SByB.jpg");
 
 void main() {
   _TestFileSystem fileSystem;
@@ -50,7 +50,7 @@ class _TestFileSystem extends Mock implements FileSystem {}
 
 class _TestFile extends Mock implements File {
   final int id;
-  final String url;
+  final Uri url;
 
   _TestFile(this.id, this.url);
 }

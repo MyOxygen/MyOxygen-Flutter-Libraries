@@ -19,9 +19,7 @@ class LogsListViewer extends StatefulWidget {
 }
 
 class _LogsListViewerState extends State<LogsListViewer> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  List<FileSystemEntity> listOfFiles;
+  List<FileSystemEntity>? listOfFiles;
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +29,18 @@ class _LogsListViewerState extends State<LogsListViewer> {
         Widget body;
 
         if (snapshot.hasError) {
-          body = ErrorDisplay(snapshot.error);
+          body = ErrorDisplay(snapshot.error as String);
         } else if (!snapshot.hasData) {
           body = Center(child: CircularProgressIndicator());
         } else {
           listOfFiles = snapshot.data;
-          if (listOfFiles.isEmpty) {
+          if (listOfFiles!.isEmpty) {
             body = Center(child: Text("No files to show."));
           } else {
             body = ListView.builder(
-              itemCount: listOfFiles.length,
+              itemCount: listOfFiles!.length,
               itemBuilder: (BuildContext context, int index) {
-                final fileName = basenameWithoutExtension(listOfFiles[index].path);
+                final fileName = basenameWithoutExtension(listOfFiles![index].path);
                 final formattedString = _formatFileName(fileName);
                 return ListTile(
                   title: Text(formattedString),
@@ -51,12 +49,12 @@ class _LogsListViewerState extends State<LogsListViewer> {
                     color: Colors.blue[300],
                   ),
                   onTap: () async {
-                    final fileDeleted = await Navigator.push(
+                    final fileDeleted = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
                         builder: (_) => LogFileViewer(
                           title: formattedString,
-                          fileSystemEntity: listOfFiles[index],
+                          fileSystemEntity: listOfFiles![index],
                         ),
                       ),
                     );
@@ -68,10 +66,6 @@ class _LogsListViewerState extends State<LogsListViewer> {
                       // We need to reload the page to stop displaying the
                       // non-existing file.
                       setState(() {});
-                      ActionLogHelper.displaySnackBar(
-                        _scaffoldKey.currentState,
-                        "Log file delete successfully.",
-                      );
                     }
                   },
                 );
@@ -81,13 +75,12 @@ class _LogsListViewerState extends State<LogsListViewer> {
         }
 
         return Scaffold(
-            key: _scaffoldKey,
             appBar: AppBar(
               title: Text("Logs List"),
               centerTitle: true,
               actions: [
                 // Delete this log file
-                if (listOfFiles != null && listOfFiles.isNotEmpty)
+                if (listOfFiles != null && listOfFiles!.isNotEmpty)
                   IconButton(
                     icon: Icon(Icons.delete_forever),
                     onPressed: _onDeletePressed,
@@ -111,14 +104,13 @@ class _LogsListViewerState extends State<LogsListViewer> {
 
   Future<void> _onDeletePressed() async {
     ActionLogHelper.displaySnackBar(
-      _scaffoldKey.currentState,
       "Are you sure you wish to delete all log files?",
-      withAction: FlatButton(
+      withAction: TextButton(
         child: Text("Delete all"),
-        textColor: Colors.red,
+        style: TextButton.styleFrom(primary: Colors.red),
         onPressed: () async {
           String snackBarMessage = "Log files deleted.";
-          for (final file in listOfFiles) {
+          for (final file in listOfFiles!) {
             try {
               await file.delete();
             } catch (e) {
@@ -128,7 +120,7 @@ class _LogsListViewerState extends State<LogsListViewer> {
 
           // Whether errors occur or not, we need to reload the page.
           setState(() {});
-          ActionLogHelper.displaySnackBar(_scaffoldKey.currentState, snackBarMessage);
+          ActionLogHelper.displaySnackBar(snackBarMessage);
         },
       ),
     );

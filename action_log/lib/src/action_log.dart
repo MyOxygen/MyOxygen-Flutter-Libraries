@@ -1,6 +1,5 @@
 import 'package:fimber_io/fimber_io.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'action_log_helper.dart';
@@ -8,8 +7,8 @@ import 'internal/file_handler.dart';
 import 'logs_list_viewer.dart';
 
 class ActionLog {
-  static String _filePath;
-  static String _lastFileName;
+  static String? _filePath;
+  static String? _lastFileName;
 
   // Use a [Lock] to ensure that only one statements is written into the log
   // file at a time. This ensures that if the app sends two logs at the same
@@ -26,17 +25,19 @@ class ActionLog {
   /// There is an optional `fileName` for specifying the filename to use when
   /// logging to a file.
   static Future<void> initialise({
-    @required bool isPublicRelease,
-    String logFolderName,
-    String fileName,
-    FileHandler fileHandler, // For testing
+    required bool isPublicRelease,
+    required GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,
+    String? logFolderName,
+    String? fileName,
+    FileHandler? fileHandler, // For testing
   }) async {
-    assert(isPublicRelease != null);
-
     if (isPublicRelease) {
       // Don't log in public release mode.
       return;
     }
+
+    // Initialise the ScaffoldMessenger key
+    ActionLogHelper.setScaffoldMessengerKey(scaffoldMessengerKey);
 
     // Enable console logging before all else, which will allow devs to see why
     // creating a directory could go wrong.

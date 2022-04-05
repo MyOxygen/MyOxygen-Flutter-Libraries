@@ -9,7 +9,7 @@ MaterialApp _appWithDialog(Function(BuildContext) createDialog) {
       child: Builder(
         builder: (BuildContext context) {
           return Center(
-            child: RaisedButton(
+            child: ElevatedButton(
               child: const Text("Open Dialog"),
               onPressed: () => createDialog(context),
             ),

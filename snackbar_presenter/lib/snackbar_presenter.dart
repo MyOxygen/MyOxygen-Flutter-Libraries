@@ -8,13 +8,16 @@ const _errorColor = Color(0xffed6e73);
 const _separationDistance = 12.0;
 
 class SnackBarPresenter {
+  static final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   const SnackBarPresenter._();
 
   /// Present an information [SnackBar] in the provided [Scaffold].
-  static void presentInformation(ScaffoldState scaffoldState, String message, {Color iconColor}) {
+  static void presentInformation(String message,
+      {Color iconColor, ScaffoldMessengerState customScaffoldMessengerState}) {
     // If the `iconColor` is null, it will default to the icon theme data color.
     _presentSnackbar(
-      scaffoldState,
+      customScaffoldMessengerState ?? scaffoldMessengerKey.currentState,
       message,
       iconColor,
       FontAwesomeIcons.infoCircle,
@@ -22,9 +25,10 @@ class SnackBarPresenter {
   }
 
   /// Present a success [SnackBar] in the provided [Scaffold].
-  static void presentSuccess(ScaffoldState scaffoldState, String message, {Color iconColor}) {
+  static void presentSuccess(String message,
+      {Color iconColor, ScaffoldMessengerState customScaffoldMessengerState}) {
     _presentSnackbar(
-      scaffoldState,
+      customScaffoldMessengerState ?? scaffoldMessengerKey.currentState,
       message,
       iconColor ?? _successColor,
       FontAwesomeIcons.solidCheckCircle,
@@ -32,9 +36,10 @@ class SnackBarPresenter {
   }
 
   /// Present an error [SnackBar] in the provided [Scaffold].
-  static void presentError(ScaffoldState scaffoldState, String error, {Color iconColor}) {
+  static void presentError(String error,
+      {Color iconColor, ScaffoldMessengerState customScaffoldMessengerState}) {
     _presentSnackbar(
-      scaffoldState,
+      customScaffoldMessengerState ?? scaffoldMessengerKey.currentState,
       error,
       iconColor ?? _errorColor,
       FontAwesomeIcons.exclamationCircle,
@@ -43,8 +48,8 @@ class SnackBarPresenter {
 
   /// Handles displaying the action [SnackBar] with its contents.
   static void _presentSnackbar(
-      ScaffoldState scaffoldState, String message, Color color, IconData icon) {
-    assert(scaffoldState != null);
+      ScaffoldMessengerState scaffoldMessengerState, String message, Color color, IconData icon) {
+    assert(scaffoldMessengerState != null);
     assert(message != null);
     assert(message.isNotEmpty);
 
@@ -66,8 +71,8 @@ class SnackBarPresenter {
 
     // Hide any currently showing SnackBars. If there are none, this will do
     // nothing.
-    scaffoldState.hideCurrentSnackBar();
+    scaffoldMessengerState.hideCurrentSnackBar();
 
-    scaffoldState.showSnackBar(snackbar);
+    scaffoldMessengerState.showSnackBar(snackbar);
   }
 }

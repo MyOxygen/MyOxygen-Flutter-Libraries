@@ -150,7 +150,7 @@ class RestApi {
 
     final headers = await createHeaderMap(combinedHeaders);
 
-    logger?.logRequest(requestType, url, headers: headers, jsonBody: jsonBody);
+    logger?.logRequest(requestType, url.toString(), headers: headers, jsonBody: jsonBody);
 
     // Shouldn't matter if the json parameter is null.
     Response response;
@@ -187,9 +187,10 @@ class RestApi {
 
   /// Builds a url by concatenating the [baseUrl] and [endpoint] and automatically
   /// makes a query string out of [query]
-  String _buildUrl(String endpoint, Map<String, String> query) {
-    final fullUrl = baseUrl + endpoint + buildQueryParameters(query);
-    return Uri.encodeFull(fullUrl);
+  Uri _buildUrl(String endpoint, Map<String, String> query) {
+    return baseUrl.startsWith("http")
+        ? Uri.http(baseUrl.replaceAll("http://", ""), endpoint, query)
+        : Uri.https(baseUrl.replaceAll("https://", ""), endpoint, query);
   }
 
   /// Converts a map of {query : parameter} to url encoded query parameters

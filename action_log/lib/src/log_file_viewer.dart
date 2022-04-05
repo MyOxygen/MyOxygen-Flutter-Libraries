@@ -15,17 +15,13 @@ class LogFileViewer extends StatefulWidget {
 
   /// This widget displays the contents of the log file as if it were on the
   /// console (horizontal and vertical scrolling, mon-spaced font).
-  const LogFileViewer({@required this.title, @required this.fileSystemEntity})
-      : assert(title != null),
-        assert(fileSystemEntity != null);
+  const LogFileViewer({required this.title, required this.fileSystemEntity});
 
   @override
   _LogFileViewerState createState() => _LogFileViewerState();
 }
 
 class _LogFileViewerState extends State<LogFileViewer> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   String fileContents = "";
 
   @override
@@ -37,7 +33,7 @@ class _LogFileViewerState extends State<LogFileViewer> {
         fileContents = snapshot.data ?? "";
 
         if (snapshot.hasError) {
-          body = ErrorDisplay(snapshot.error);
+          body = ErrorDisplay(snapshot.error as String);
         } else if (!snapshot.hasData) {
           body = Center(child: CircularProgressIndicator());
         } else {
@@ -55,12 +51,11 @@ class _LogFileViewerState extends State<LogFileViewer> {
         }
 
         return Scaffold(
-          key: _scaffoldKey,
           appBar: AppBar(
             title: Text(widget.title),
             actions: [
               // Only display the copy icon if there is text to copy.
-              if (fileContents != null && fileContents.trim().isNotEmpty)
+              if (fileContents.trim().isNotEmpty)
                 IconButton(
                   icon: Icon(Icons.copy),
                   onPressed: _onCopyPressed,
@@ -106,20 +101,19 @@ class _LogFileViewerState extends State<LogFileViewer> {
 
   Future<void> _onDeletePressed() async {
     ActionLogHelper.displaySnackBar(
-      _scaffoldKey.currentState,
       "Are you sure you wish to delete?",
-      withAction: FlatButton(
+      withAction: TextButton(
         child: Text("Delete"),
-        textColor: Colors.red,
+        style: TextButton.styleFrom(primary: Colors.red),
         onPressed: () async {
           final success = await _doAction(
             widget.fileSystemEntity.delete(),
-            "Log file delete successfully.",
+            "Log file deleted successfully.",
             "Failed to delete log file.",
           );
 
           if (success) {
-            Navigator.pop(context, success);
+            Navigator.pop<bool>(context, success);
           }
         },
       ),
@@ -142,7 +136,7 @@ class _LogFileViewerState extends State<LogFileViewer> {
       success = false;
     }
 
-    ActionLogHelper.displaySnackBar(_scaffoldKey.currentState, snackbarMessage);
+    ActionLogHelper.displaySnackBar(snackbarMessage);
 
     return success;
   }

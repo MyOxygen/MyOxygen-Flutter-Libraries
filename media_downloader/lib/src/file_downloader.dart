@@ -29,7 +29,7 @@ class FileDownloader {
   /// If it already exists in the [FileSystem] then it'll just return that.
   /// Beware: This can throw any exceptions that [Client] can throw - as well as
   /// any file-system exceptions.
-  Future<File> download({@required String url, @required String fileName}) async {
+  Future<File> download({@required Uri url, @required String fileName}) async {
     // if we've already downloaded this - just return it.
     final existingFile = await fileSystem.getExistingFileFor(fileName);
     if (existingFile != null) {

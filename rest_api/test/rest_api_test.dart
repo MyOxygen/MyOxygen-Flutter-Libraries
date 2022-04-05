@@ -7,7 +7,7 @@ import 'package:rest_api/rest_api.dart';
 import 'package:rest_api/src/rest_api_errors.dart';
 import 'package:rest_api/src/rest_header_provider.dart';
 
-const _baseUrl = "https://www.example.com";
+const _baseUrl = "www.example.com";
 const _endpoint = "/test";
 const _headerName = "HEADER_NAME";
 const _headerValue = "HEADER_VALUE";
@@ -17,9 +17,10 @@ const _keyA = "queryA";
 const _valueA = "valueA";
 const _keyB = "queryB";
 const _valueB = "valueB";
+const _parameters = <String, String>{_keyA: _valueA, _keyB: _valueB};
 
 void main() {
-  const _fullUrl = "$_baseUrl$_endpoint?$_keyA=$_valueA&$_keyB=$_valueB";
+  final _fullUrl = Uri.https(_baseUrl, _endpoint, _parameters);
 
   _MockClient _client;
   RestApi restApi;

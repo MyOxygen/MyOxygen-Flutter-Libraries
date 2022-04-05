@@ -27,7 +27,7 @@ void main() {
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
-            widget is RaisedButton &&
+            widget is ElevatedButton &&
             widget.child is Text &&
             (widget.child as Text).data.toLowerCase().startsWith('view logs'),
       ),
